@@ -724,7 +724,7 @@
     <div class="milestone">
       <div>
         <div class="label">🚴 Comprar a bike</div>
-        <div class="sub">Prazo: fim da semana 3 (até <b id="bikeDeadlineLabel">--</b>). Treino indoor não substitui volume real na estrada.</div>
+        <div class="sub" id="bikeMilestoneSub">Prazo: fim da semana 3 (até <b id="bikeDeadlineLabel">--</b>). Treino indoor não substitui volume real na estrada.</div>
       </div>
       <div class="badge" id="bikeBadge">--</div>
     </div>
@@ -756,12 +756,13 @@
   const START = new Date(2026,7,27);            // 27 Aug 2026
   const RACE  = new Date(2026,11,6,6,0,0);       // 06 Dez 2026, 06:00 (assumido)
   const BIKE_DEADLINE = new Date(2026,8,13); // fim da semana 3 (Seg 07/09 – Dom 13/09) com o novo alinhamento
+  const BIKE_PURCHASED = true; // comprada em 02/09/2026, antes do prazo
   const TOTAL_WEEKS = 14;
   const START_WEIGHT = 89.8;
   const GOAL_WEIGHT = 80.0;
 
   const PHASES = [
-    {name:'Base', weeks:[1,3], color:'var(--phase-base)', focus:'Adaptação, técnica de nado, base de corrida. Comprar a bike até o fim da semana 3.'},
+    {name:'Base', weeks:[1,3], color:'var(--phase-base)', focus:'Adaptação, técnica de nado, base de corrida. Bike comprada — adaptação à estrada começa já na semana 2.'},
     {name:'Construção', weeks:[4,6], color:'var(--phase-construcao)', focus:'Volume sobe, primeiros duplos e primeiro brick leve.'},
     {name:'Intensidade', weeks:[7,9], color:'var(--phase-intensidade)', focus:'Intervalados, ritmo de prova, bricks de verdade.'},
     {name:'Pico', weeks:[10,12], color:'var(--phase-pico)', focus:'Maior carga do plano. Simulação completa da prova.'},
@@ -794,8 +795,8 @@
         note:'Mesma sensação da semana passada, só que 3 minutos a mais. É assim que o corpo se acostuma — em passos pequenos.'},
       {mod:'Natação',zone:'Z2',title:'Resistência',dur:30,distLabel:'800m',type:'swim',distKm:0.8,
         note:'Primeira vez tentando 800m sem pausas longas. Se precisar parar, pare — mas tente encostar na borda o mínimo de vezes.'},
-      {mod:'Bike',zone:'Z2',title:'Base — ainda indoor',dur:40,distLabel:'14km',type:'bike',distKm:14,
-        note:'Contagem regressiva pra bike própria. Aproveite a estacionária pra treinar cadência alta (90+ rpm) — facilita muito quando a bike de verdade chegar.'},
+      {mod:'Bike',zone:'Z1-Z2',title:'Estreia na rua',dur:40,distLabel:'14km',type:'bike',distKm:14,
+        note:'Bike chegou antes do prazo — primeira vez nessa bike específica na rua, mas você já pedala fora de casa, então mantém o volume original em vez de reduzir. Sem sapatilha ainda: use tênis + pedal plano por enquanto, não é bloqueio nenhum. Aproveite os primeiros km pra ajustar altura do banco e testar freio/câmbio antes de acelerar o ritmo.'},
       {mod:'Corrida',zone:'Z2',title:'Tempo moderado',dur:32,distLabel:'4,5km',type:'run',distKm:4.5,pace:'6:15–6:30/km, contínuo',
         note:'Ritmo um pouco mais firme que a rodagem, mas controlado. Se a respiração ficar ofegante demais, segure o ritmo.'}
     ],
@@ -806,8 +807,8 @@
         note:'Última semana só de estacionária na bike — aproveite pra fechar essa fase de corrida com uma rodagem tranquila.'},
       {mod:'Natação',zone:'Z2',title:'Volume',dur:32,distLabel:'900m',type:'swim',distKm:0.9,
         note:'900m é mais do que você nadava há duas semanas. Repare nisso — não é força de vontade, é adaptação real acontecendo.'},
-      {mod:'Bike',zone:'Z1-Z2',title:'Bike própria entrando em ação',dur:40,distLabel:'15km',type:'bike',distKm:15,
-        note:'Se a bike já chegou, hoje ela vai pra rua pela primeira vez — terreno plano e tranquilo, só sentindo a máquina. Se ainda não chegou, é prioridade nº1 essa semana.'},
+      {mod:'Bike',zone:'Z1-Z2',title:'Segunda saída na rua',dur:40,distLabel:'15km',type:'bike',distKm:15,
+        note:'Segundo treino de verdade na estrada — volume sobe um pouco em relação à estreia da semana passada. Ainda ritmo controlado, mas já pode variar um pouco o percurso (subida leve, algum cruzamento) pra ganhar confiança com freio e troca de marcha em situação real.'},
       {mod:'Corrida',zone:'Z2',title:'Fechamento da Base',dur:32,distLabel:'4,5km',type:'run',distKm:4.5,pace:'6:15–6:30/km, contínuo',
         note:'Fim da fase Base. Semana que vem os duplos começam — hoje é uma corrida tranquila pra fechar bem esse bloco.'}
     ],
@@ -1360,7 +1361,12 @@
   document.getElementById('bikeDeadlineLabel').textContent = fmtDateFull(BIKE_DEADLINE);
   const daysToBike = daysBetween(today, BIKE_DEADLINE);
   const bikeBadge = document.getElementById('bikeBadge');
-  if(daysToBike < 0){ bikeBadge.textContent='prazo já passou'; bikeBadge.classList.remove('ok'); }
+  const bikeSub = document.getElementById('bikeMilestoneSub');
+  if(BIKE_PURCHASED){
+    bikeBadge.textContent = '✓ comprada';
+    bikeBadge.classList.add('ok');
+    bikeSub.innerHTML = 'Comprada em 02/09/2026 — '+Math.max(0,daysToBike)+' dias de folga antes do prazo original ('+fmtDateFull(BIKE_DEADLINE)+'). Rodagem na rua já entrou no plano a partir da semana 2.';
+  } else if(daysToBike < 0){ bikeBadge.textContent='prazo já passou'; bikeBadge.classList.remove('ok'); }
   else { bikeBadge.textContent = daysToBike+' dias restantes'; bikeBadge.classList.toggle('ok', daysToBike>10); }
 
   // ============ TRAINING CAROUSEL ============
