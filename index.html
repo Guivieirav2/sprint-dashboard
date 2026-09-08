@@ -1143,16 +1143,37 @@
 
   // ============ ACTIVITY LOG (real Garmin/Strava data, pasted manually) ============
   const SEED_ACTIVITIES = [
-    {date:'2026-08-27', time:'22:02', mod:'Bike', title:'Night Ride', distKm:null, durMin:20.07, cal:172, hr:129, pace:null},
-    {date:'2026-08-29', time:'18:05', mod:'Corrida', title:'Evening Run', distKm:5.01, durMin:32.93, cal:null, hr:null, pace:'6:34/km'},
-    {date:'2026-08-30', time:'15:26', mod:'Bike', title:'Pedalada da tarde', distKm:null, durMin:30.15, cal:222, hr:124, pace:null},
-    {date:'2026-08-30', time:'15:57', mod:'Corrida', title:'Corrida da tarde', distKm:1.69, durMin:10.72, cal:null, hr:null, pace:'6:20/km'}
+    {id:'seed-0827-bike', date:'2026-08-27', time:'22:02', mod:'Bike', title:'Night Ride', distKm:null, durMin:20.07, cal:172, hr:129, pace:null},
+    {id:'seed-0829-run', date:'2026-08-29', time:'18:05', mod:'Corrida', title:'Evening Run', distKm:5.01, durMin:32.93, cal:null, hr:null, pace:'6:34/km'},
+    {id:'seed-0830-bike', date:'2026-08-30', time:'15:26', mod:'Bike', title:'Pedalada da tarde', distKm:null, durMin:30.15, cal:222, hr:124, pace:null},
+    {id:'seed-0830-run', date:'2026-08-30', time:'15:57', mod:'Corrida', title:'Corrida da tarde', distKm:1.69, durMin:10.72, cal:null, hr:null, pace:'6:20/km'},
+    // Semana 2 + início da semana 3 — importado do export Strava em 08/09/2026.
+    // Horários convertidos de UTC para Brasília (UTC-3); duração usa tempo em movimento
+    // (bate com o que o app mostra, ex: Night Run 25min57s/6:28/km confirmado por print).
+    {id:'19997606788', date:'2026-09-01', time:'19:13', mod:'Natação', title:'Evening Swim', distKm:1.0, durMin:20.08, cal:245, hr:129, pace:null},
+    {id:'19999368080', date:'2026-09-01', time:'22:12', mod:'Bike', title:'Night Ride', distKm:5.26, durMin:37.42, cal:246, hr:118, pace:null},
+    {id:'20002860239', date:'2026-09-02', time:'06:16', mod:'Musculação', title:'Morning Weight Training', distKm:null, durMin:58.45, cal:303, hr:110, pace:null},
+    {id:'20013908738', date:'2026-09-02', time:'21:57', mod:'Corrida', title:'Night Run', distKm:4.01, durMin:25.95, cal:330, hr:152, pace:'6:28/km'},
+    {id:'20017663692', date:'2026-09-03', time:'07:12', mod:'Natação', title:'Morning Swim', distKm:0.8, durMin:17.53, cal:181, hr:135, pace:null},
+    {id:'20037929873', date:'2026-09-04', time:'16:59', mod:'Corrida', title:'Afternoon Run', distKm:1.36, durMin:15.7, cal:113, hr:109, pace:'11:33/km'},
+    {id:'20038669723', date:'2026-09-04', time:'18:18', mod:'Bike', title:'Evening Ride', distKm:14.15, durMin:43.9, cal:419, hr:140, pace:null},
+    {id:'20052864241', date:'2026-09-05', time:'17:04', mod:'Corrida', title:'Corrida da tarde', distKm:5.62, durMin:105.4, cal:720, hr:128, pace:'18:45/km'},
+    {id:'20059532795', date:'2026-09-06', time:'07:23', mod:'Musculação', title:'Musculação matinal', distKm:null, durMin:53.45, cal:243, hr:102, pace:null},
+    {id:'20072212200', date:'2026-09-07', time:'07:36', mod:'Bike', title:'Pedalada matinal', distKm:10.09, durMin:24.9, cal:229, hr:133, pace:null},
+    {id:'20072211825', date:'2026-09-07', time:'08:07', mod:'Corrida', title:'Corrida matinal', distKm:4.01, durMin:26.1, cal:345, hr:160, pace:'6:31/km'},
+    {id:'20085940003', date:'2026-09-08', time:'06:35', mod:'Musculação', title:'Musculação matinal', distKm:null, durMin:64.55, cal:391, hr:115, pace:null}
   ];
   let activities = [];
   function loadActivities(){
     const stored = storageGet('activities');
-    if(stored && Array.isArray(stored) && stored.length){ activities = stored; }
-    else { activities = SEED_ACTIVITIES.slice(); saveActivities(); }
+    const storedArr = (stored && Array.isArray(stored)) ? stored : [];
+    // Merge by id: seed entries always win over a stored entry with the same id
+    // (so a corrected re-upload fixes bad data already cached in localStorage),
+    // while any stored entry without a matching seed id (e.g. manually added later) is kept as-is.
+    const seedIds = new Set(SEED_ACTIVITIES.map(a=>a.id));
+    const keptStored = storedArr.filter(a=>!seedIds.has(a.id));
+    activities = keptStored.concat(SEED_ACTIVITIES);
+    saveActivities();
   }
   function saveActivities(){ storageSet('activities', activities); }
 
@@ -1184,7 +1205,7 @@
     const listEl = document.getElementById('activityList');
     const sorted = activities.slice().sort((a,b)=> (a.date+a.time) < (b.date+b.time) ? 1 : -1);
     listEl.innerHTML = sorted.map(act=>{
-      const icon = act.mod==='Natação'?'🏊':act.mod==='Bike'?'🚴':'🏃';
+      const icon = act.mod==='Natação'?'🏊':act.mod==='Bike'?'🚴':act.mod==='Musculação'?'🏋️':'🏃';
       const d = new Date(act.date+'T00:00:00');
       const stats = [];
       if(act.distKm!=null) stats.push('<div class="as-item"><div class="as-l">Distância</div><div class="as-v">'+act.distKm+'km</div></div>');
