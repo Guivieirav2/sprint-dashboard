@@ -338,6 +338,23 @@
   .day-row.run{border-left-color:var(--phase-construcao);}
   .day-row.bike{border-left-color:var(--phase-pico);}
   .day-row.rest{border-left-color:var(--border); opacity:.7;}
+  .day-row.race{border-left-color:var(--accent); background:rgba(200,245,107,.06);}
+  .vc-legend{display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--text-dim); margin:4px 0 8px;}
+  .vc-legend .item{display:flex; align-items:center; gap:6px;}
+  .vc-legend .sw{width:10px; height:10px; border-radius:3px; display:inline-block;}
+  .vc-legend .ln{width:16px; height:2px; border-radius:2px; display:inline-block;}
+  .vc-wrap svg{width:100%; height:auto; display:block;}
+  .load-tiles{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:6px 0 14px;}
+  @media (max-width:640px){ .load-tiles{grid-template-columns:repeat(2,1fr);} }
+  .load-tiles .lt{background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:10px 12px;}
+  .load-tiles .l{font-size:11px; color:var(--text-faint);}
+  .load-tiles .v{font-family:var(--font-display); font-size:22px; font-weight:700; color:var(--text);}
+  .load-tiles .s{font-size:11px; color:var(--text-dim);}
+  .chart-tip{position:fixed; z-index:80; display:none; pointer-events:none; background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:12px; color:var(--text); min-width:170px; box-shadow:0 6px 20px rgba(0,0,0,.4);}
+  .chart-tip .tr{display:flex; align-items:center; gap:6px; color:var(--text-dim); margin-top:3px;}
+  .chart-tip .tr b{margin-left:auto; color:var(--text); font-family:var(--font-display);}
+  .chart-tip .tr.tot{border-top:1px solid var(--border); padding-top:4px; margin-top:5px;}
+  .chart-tip .sw{width:8px; height:8px; border-radius:2px; display:inline-block;}
   .day-row .dr-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;}
   .day-row .dr-wd{font-size:11.5px; color:var(--text-faint); font-family:var(--font-display); min-width:70px;}
   .day-row .dr-mod{
@@ -434,7 +451,7 @@
     <div class="cell"><div class="n" id="weekNowLabel">--</div><div class="l">Semana do plano</div></div>
     <div class="cell"><div class="n" id="phaseNowLabel">--</div><div class="l">Fase atual</div></div>
     <div class="cell"><div class="n" id="weightNowLabel">--</div><div class="l">Peso mais recente</div></div>
-    <div class="cell"><div class="n">89,8→80kg</div><div class="l">Meta de peso</div></div>
+    <div class="cell"><div class="n">80kg</div><div class="l">Meta de peso (início 89,8kg)</div></div>
     <div class="cell"><div class="n" id="planStatus2">--</div><div class="l">Início: <span id="startDateLabel"></span></div></div>
   </div>
 
@@ -443,13 +460,13 @@
     <div class="athlete-avatar">G</div>
     <div>
       <div class="athlete-name">Guilherme</div>
-      <div class="athlete-sub">⚡ Sprint MSK · 14 semanas</div>
+      <div class="athlete-sub">⚡ Sprint MSK · 15 semanas · rumo ao 70.3 em 2027</div>
     </div>
     <div class="athlete-tag">1ª PROVA DE TRIATLO</div>
   </div>
 
   <div class="note-box warn">
-    <b>Estrutura recomprimida.</b> A prova mudou de meados de janeiro para 06/12/2026 — de 20 para <b>14 semanas</b> de treino. No ritmo sustentável de −0,5kg/semana, você chega à prova em <b>~82,8kg</b>, não 80kg — faltariam ~2,8kg. Decisão sua: aceitar ~83kg no dia da prova, ou tratar 80kg como meta pós-prova.
+    <b>Peso: 89,8kg → 83kg em ~5 semanas.</b> Isso é ~1,3kg/semana, mais que o dobro do ritmo planejado (−0,5kg/sem). Parte é água e glicogênio do começo, mas a partir de agora o volume sobe de ~3h para 5h+ por semana — manter esse ritmo de perda com essa carga é o caminho mais curto pra lesão e treino ruim. Faltam 3kg pra 80kg em ~9 semanas: <b>−0,3kg/semana já chega lá</b>. Coma mais nos dias de pedal longo e longão, não menos.
   </div>
 
   <!-- TODAY CARD -->
@@ -486,7 +503,7 @@
   </div>
 
   <!-- TRAINING PLAN -->
-  <div class="section-title">Plano de Treino Sprint MSK — 14 semanas</div>
+  <div class="section-title">Plano de Treino Sprint MSK — 15 semanas</div>
   <div class="subtabs">
     <button class="subtab-btn active" data-subtab="prova">🏊🚴🏃 Modalidades da prova</button>
     <button class="subtab-btn" data-subtab="academia">🏋️ Academia (opcional)</button>
@@ -565,6 +582,31 @@
     </div>
   </div>
 
+  <!-- WEEKLY VOLUME + TRAINING LOAD -->
+  <div class="section-title">Volume e carga de treino</div>
+  <div class="card">
+    <h2>Volume semanal planejado <span class="tag">minutos por modalidade</span></h2>
+    <div class="vc-legend">
+      <span class="item"><span class="sw" style="background:var(--accent-2)"></span>Natação</span>
+      <span class="item"><span class="sw" style="background:var(--phase-pico)"></span>Bike</span>
+      <span class="item"><span class="sw" style="background:var(--phase-construcao)"></span>Corrida</span>
+    </div>
+    <div class="chart-wrap vc-wrap" id="volChart"></div>
+    <div class="phase-note">A partir da semana 6, a estrutura é <b>segunda de descanso, terça a domingo de treino</b>. Sábado é o simulado no lago com as 3 modalidades e domingo é o longão de corrida. Os degraus para baixo são as semanas de deload (6 e 10) e o polimento (14 e 15).</div>
+  </div>
+  <div class="card">
+    <h2>Carga de treino — forma × fadiga <span class="tag">estimativa por TSS</span></h2>
+    <div class="load-tiles" id="loadTiles"></div>
+    <div class="vc-legend">
+      <span class="item"><span class="ln" style="background:var(--accent-2)"></span>Fitness (CTL)</span>
+      <span class="item"><span class="ln" style="background:var(--phase-pico)"></span>Fadiga (ATL)</span>
+      <span class="item"><span class="ln" style="background:var(--accent)"></span>Forma (TSB)</span>
+    </div>
+    <div class="chart-wrap vc-wrap" id="loadChart"></div>
+    <div class="phase-note"><b>Como ler:</b> CTL é o condicionamento acumulado (média de 42 dias), ATL é o cansaço recente (7 dias), TSB = CTL − ATL. TSB negativo é normal em semana de carga; o objetivo é chegar no dia da prova com TSB positivo. A carga é estimada pela duração × zona de cada sessão. Dias passados sem atividade registrada contam como feitos conforme o plano, então o gráfico fica mais fiel quanto mais treinos reais você registrar.</div>
+  </div>
+  <div class="chart-tip" id="chartTip"></div>
+
   <div class="grid2">
     <!-- CHECK-IN -->
     <div class="card">
@@ -617,7 +659,7 @@
     <h2>Trajetória de peso</h2>
     <div class="chart-wrap" id="chartWrap"></div>
     <div class="chart-legend">
-      <div class="item"><span class="ln" style="background:var(--text-faint)"></span> Projeção (−0,5kg/sem)</div>
+      <div class="item"><span class="ln" style="background:var(--text-faint)"></span> Projeção a partir do último peso, ritmo constante até 80kg na prova</div>
       <div class="item"><span class="ln" style="background:var(--accent)"></span> Registrado por você</div>
     </div>
   </div>
@@ -744,7 +786,7 @@
   </div>
 
   <footer>
-    <p><b>Sobre este painel:</b> a semana 1 é curta de propósito (27/08 a 31/08, 5 dias) porque é o início real que já aconteceu — a partir da semana 2 as semanas seguem terça a segunda, como você pediu. Os paces das corridas foram calibrados a partir dos seus treinos reais registrados (6:20–6:34/km em esforço moderado); ajuste se não bater com o que você sente na prática. Os biomarcadores (sono/RPE) vêm do seu check-in manual; não há sincronização automática com relógio/wearable.</p>
+    <p><b>Sobre este painel:</b> as datas são calculadas a partir do calendário real (dia da semana sempre bate com a data). A semana 1 é curta (27/08 a 30/08) porque é o início que já aconteceu. Semanas 2–5: terça a sábado de treino, segunda e domingo de descanso. A partir da semana 6: <b>segunda é o único descanso fixo, terça a domingo de treino</b>. A semana 15 termina no domingo da prova (06/12). Os paces das corridas foram calibrados nos seus treinos reais (6:20–6:34/km em esforço moderado); ajuste se não bater com o que você sente.</p>
     <p><b>Ritmo de natação por zona (min:seg por 100m, calibrado nos seus nados reais de ~2:00–2:11/100m):</b> Z1 = 2:20–2:35/100m (muito leve, técnica); Z1-Z2 = 2:10–2:25/100m (leve, aeróbico); Z2 = 2:00–2:15/100m (moderado, seu ritmo de base atual); Z3 = 1:50–2:05/100m (forte, ritmo de prova). Cada treino de natação agora mostra o pace-alvo da série — sem série especificada, é o pace do bloco inteiro.</p>
     <p>Peso e treinos concluídos ficam salvos <b>no armazenamento local do seu navegador (localStorage)</b> — não sincroniza entre dispositivos e não é enviado a nenhum servidor. Data da prova: 06/12/2026, horário de largada assumido às 06h — ajuste a constante <code>RACE</code> no código se souber o horário oficial.</p>
   </footer>
@@ -758,18 +800,18 @@
   const RACE  = new Date(2026,11,6,6,0,0);       // 06 Dez 2026, 06:00 (assumido)
   const BIKE_DEADLINE = new Date(2026,8,13); // fim da semana 3 (Seg 07/09 – Dom 13/09) com o novo alinhamento
   const BIKE_PURCHASED = true; // comprada em 02/09/2026, antes do prazo
-  const TOTAL_WEEKS = 14;
+  const TOTAL_WEEKS = 15;
   const START_WEIGHT = 89.8;
   const GOAL_WEIGHT = 80.0;
 
   const PHASES = [
     {name:'Base', weeks:[1,3], color:'var(--phase-base)', focus:'Adaptação, técnica de nado, base de corrida. Bike comprada — adaptação à estrada começa já na semana 2.'},
     {name:'Construção', weeks:[4,6], color:'var(--phase-construcao)', focus:'Volume sobe, primeiros duplos e primeiro brick leve.'},
-    {name:'Intensidade', weeks:[7,9], color:'var(--phase-intensidade)', focus:'Intervalados, ritmo de prova, bricks de verdade.'},
-    {name:'Pico', weeks:[10,12], color:'var(--phase-pico)', focus:'Maior carga do plano. Simulação completa da prova.'},
-    {name:'Polimento', weeks:[13,14], color:'var(--phase-polimento)', focus:'Taper. Semana 14 é quase só descanso antes da prova.'}
+    {name:'Intensidade', weeks:[7,10], color:'var(--phase-intensidade)', focus:'6 dias por semana. Sábado é simulado no lago (nado + bike + corrida), domingo é longão de corrida. Bike longa cresce dentro do simulado. Semana 10 é deload.'},
+    {name:'Pico', weeks:[11,13], color:'var(--phase-pico)', focus:'Maior carga do plano: longão até 12km, simulado com bike de até 90min e ensaio geral na distância de prova (750m + 20km + 5km) no lago em 14/11.'},
+    {name:'Polimento', weeks:[14,15], color:'var(--phase-polimento)', focus:'Taper. Volume cai, intensidade de prova se mantém. Prova no domingo 06/12.'}
   ];
-  const DELOAD_WEEKS = [3,6,9,12];
+  const DELOAD_WEEKS = [6,10];
 
   function phaseForWeek(w){ return PHASES.find(p=>w>=p.weeks[0]&&w<=p.weeks[1]) || PHASES[0]; }
   function phaseColorHex(name){
@@ -849,120 +891,155 @@
         second:{mod:'Corrida',zone:'Z1',title:'Corrida leve',dur:10,distLabel:'1,3km',type:'run',distKm:1.3,pace:'7:10–7:30/km, muito tranquilo'}},
       {mod:'Bike',zone:'Z1-Z2',title:'Leve',dur:35,distLabel:'12km',type:'bike',distKm:12,
         note:'Pedalada tranquila, sem cobrar ritmo. Aproveita pra prestar atenção só na postura e na cadência.'},
-      {mod:'Corrida',zone:'Z1-Z2',title:'Fechamento',dur:25,distLabel:'3,5km',type:'run',distKm:3.5,pace:'6:40–6:55/km, contínuo',
-        note:'Fecha a fase de Construção com corrida leve. Semana que vem entra a Intensidade — essa recuperação é o que permite aguentar ela.'}
+      {mod:'Simulado',zone:'Z1-Z2',title:'Primeiro simulado — leve',dur:15,distLabel:'600m + 12km + 3km',type:'swim',distKm:0.6,pace:'contínuo, sem parar (~2:15–2:30/100m)',
+        note:'Primeiro simulado com as 3 modalidades, em semana de deload: tudo leve. O objetivo é a logística — onde deixar a bike, quanto tempo leva pra trocar, o que esqueceu. Cronometre as transições.',
+        second:{mod:'Bike',zone:'Z1-Z2',title:'Bike',dur:30,distLabel:'~12km',type:'bike',distKm:12},
+        third:{mod:'Corrida',zone:'Z1-Z2',title:'Corrida',dur:21,distLabel:'3km',type:'run',distKm:3,pace:'6:50–7:10/km, solto'}},
+      {mod:'Corrida',zone:'Z2',title:'Corrida leve de domingo',dur:35,distLabel:'5km',type:'run',distKm:5,pace:'6:50–7:10/km',
+        note:'Fecha a semana de deload. Depois de ontem, corra bem solto.'}
     ],
     7:[
-      {mod:'Natação',zone:'Z3',title:'Intervalado',dur:35,distLabel:'900m',type:'swim',distKm:0.9,pace:'1:50–2:05/100m nas repetições',
-        note:'Primeiros intervalos de verdade: 6x100m em ritmo forte, 30s de descanso. Vai doer um pouco mais que o normal — é proposital.'},
-      {mod:'Duplo',zone:'Z3',title:'Corrida intervalada + bike leve',dur:25,distLabel:'25min + 12min',type:'run',distKm:3,pace:'6x400m a 5:20–5:35/km, 90s trote de recuperação entre séries',
-        note:'Corrida intervalada de manhã, bike bem leve depois — curta de propósito, é a primeira vez que bike entra num duplo. Estímulos diferentes no mesmo dia pra acostumar o corpo a produzir força já cansado.',
-        second:{mod:'Bike',zone:'Z2',title:'Bike leve',dur:12,distLabel:'5km',type:'bike',distKm:5}},
-      {mod:'Duplo',zone:'Z2',title:'Brick leve',dur:35,distLabel:'800m + 15min',type:'swim',distKm:0.8,
-        note:'Duplo clássico de brick leve — sair da água e sentir as pernas pesadas na corrida é exatamente o que acontece na prova.',
-        second:{mod:'Corrida',zone:'Z2',title:'Corrida pós-nado',dur:15,distLabel:'2km',type:'run',distKm:2,pace:'6:20–6:35/km'}},
-      {mod:'Bike',zone:'Z3',title:'Tempo curto',dur:30,distLabel:'12km',type:'bike',distKm:12,
-        note:'Depois do deload, o volume de bike sobe em degrau — essa semana ainda curta de propósito. Sustente o esforço, não é sprint.'},
-      {mod:'Brick',zone:'Z3',title:'Primeiro brick de verdade (curto)',dur:22,distLabel:'6km + 2,5km',type:'bike',distKm:6,
-        note:'Bike curta forte direto pra corrida forte, sem pausa. Curto de propósito — o objetivo hoje é só sentir a transição, não a distância. As pernas vão parecer de gelatina nos primeiros minutos correndo — normal, todo triatleta sente isso.',
-        second:{mod:'Corrida',zone:'Z3',title:'Corrida pós-bike',dur:14,distLabel:'2,5km',type:'run',distKm:2.5,pace:'5:50–6:10/km (pernas pesam nos primeiros 400–500m, é normal)'}}
+      {mod:'Natação',zone:'Z2-Z3',title:'Séries',dur:35,distLabel:'900m',type:'swim',distKm:0.9,pace:'1:55–2:10/100m nas repetições',
+        note:'200m solto + 6x100m firme (20s de descanso) + 100m solto. As repetições são onde a velocidade de prova é construída.'},
+      {mod:'Corrida',zone:'Z3',title:'Intervalado',dur:37,distLabel:'5,5km',type:'run',distKm:5.5,pace:'6x400m a 5:20–5:35/km, 90s trote entre tiros',
+        note:'1,5km de aquecimento + 6x400m + 1,5km de desaquecimento. Tiros com distância fixa e recuperação definida — não é fartlek.'},
+      {mod:'Bike',zone:'Z2-Z3',title:'Rodagem com blocos',dur:40,distLabel:'~16km',type:'bike',distKm:16,
+        note:'10min leve + 3x5min em Z3 (respiração forte, mas controlada) com 4min leve entre + soltar no fim.'},
+      {mod:'Natação',zone:'Z1-Z2',title:'Técnica (piscina)',dur:25,distLabel:'700m',type:'swim',distKm:0.7,pace:'2:10–2:25/100m',
+        note:'Nado leve de técnica: respiração bilateral, pegada longa, rolamento. Amanhã é simulado no lago — hoje é pra chegar fresco.'},
+      {mod:'Simulado',zone:'Z2',title:'Simulado no lago',dur:18,distLabel:'750m + 20km + 3km',type:'swim',distKm:0.75,pace:'contínuo, sem parar (~2:15–2:30/100m)',
+        note:'Nado de 750m no lago + bike 50min + corrida 3km, tudo em Z2. Transições treinadas, sem pressa. A bike daqui vai crescendo semana a semana e vira seu pedal longo.',
+        second:{mod:'Bike',zone:'Z2',title:'Bike',dur:50,distLabel:'~20km',type:'bike',distKm:20},
+        third:{mod:'Corrida',zone:'Z2',title:'Corrida',dur:20,distLabel:'3km',type:'run',distKm:3,pace:'6:30–6:50/km'}},
+      {mod:'Corrida',zone:'Z2',title:'Longão',dur:48,distLabel:'7km',type:'run',distKm:7,pace:'6:45–7:05/km, conversando',
+        note:'Longão no dia seguinte ao simulado: pernas um pouco cansadas, e é isso que constrói resistência. Ritmo de conversa, sem olhar o pace.'}
     ],
     8:[
-      {mod:'Natação',zone:'Z3',title:'Intervalado',dur:36,distLabel:'950m',type:'swim',distKm:0.95,pace:'1:50–2:05/100m nas repetições',
-        note:'8x100m forte, 25s de descanso. Repare se seu tempo por 100m está mais consistente que semana passada — sinal mais claro de evolução.'},
-      {mod:'Duplo',zone:'Z3',title:'Corrida + bike',dur:27,distLabel:'27min + 17min',type:'run',distKm:3.3,pace:'8x300m a 5:15–5:30/km, 75s trote de recuperação entre séries',
-        note:'Mesmo formato de semana passada, um pouco mais de volume nos dois lados. A recuperação entre eles deve estar mais rápida.',
-        second:{mod:'Bike',zone:'Z2',title:'Bike leve',dur:17,distLabel:'7km',type:'bike',distKm:7}},
-      {mod:'Duplo',zone:'Z2',title:'Brick leve',dur:38,distLabel:'900m + 18min',type:'swim',distKm:0.9,
-        note:'Aumentando o brick leve aos poucos. Foco em manter a cadência da corrida logo ao sair da água — a parte mais estranha da transição.',
-        second:{mod:'Corrida',zone:'Z2',title:'Corrida pós-nado',dur:18,distLabel:'2,3km',type:'run',distKm:2.3,pace:'6:15–6:30/km'}},
-      {mod:'Bike',zone:'Z3',title:'Tempo',dur:40,distLabel:'17km',type:'bike',distKm:17,
-        note:'Mais volume que semana passada, subindo em degrau. Mantenha a mesma sensação de esforço — o corpo vai render mais no mesmo esforço.'},
-      {mod:'Brick',zone:'Z3',title:'Brick — mais perto da prova',dur:38,distLabel:'13km + 2,8km',type:'bike',distKm:13,
-        note:'Brick um pouco mais longo que semana passada, ainda subindo aos poucos. Se sentir que aguenta mais na corrida que semana passada, é exatamente o esperado.',
-        second:{mod:'Corrida',zone:'Z3',title:'Corrida pós-bike',dur:15,distLabel:'2,8km',type:'run',distKm:2.8,pace:'5:45–6:05/km'}}
+      {mod:'Natação',zone:'Z2-Z3',title:'Séries',dur:38,distLabel:'1000m',type:'swim',distKm:1.0,pace:'1:55–2:10/100m nas repetições',
+        note:'200m solto + 8x100m firme (20s de descanso) + 100m solto. Compare o tempo médio por 100m com a semana passada.'},
+      {mod:'Corrida',zone:'Z3',title:'Tempo run',dur:40,distLabel:'6km',type:'run',distKm:6,pace:'3km contínuos a 6:00–6:10/km',
+        note:'1,5km aquecimento + 3km em ritmo constante, firme + 1,5km desaquecimento. Ritmo único, sem variação.'},
+      {mod:'Bike',zone:'Z2-Z3',title:'Blocos',dur:40,distLabel:'~16km',type:'bike',distKm:16,
+        note:'10min leve + 3x7min em Z3 com 3min leve entre. Cadência alta (85–95rpm) nos blocos.'},
+      {mod:'Natação',zone:'Z1-Z2',title:'Técnica (piscina)',dur:25,distLabel:'700m',type:'swim',distKm:0.7,pace:'2:10–2:25/100m',
+        note:'Nado leve de técnica: respiração bilateral, pegada longa, rolamento. Amanhã é simulado no lago — hoje é pra chegar fresco.'},
+      {mod:'Simulado',zone:'Z2',title:'Simulado no lago',dur:20,distLabel:'800m + 26km + 3,5km',type:'swim',distKm:0.8,pace:'contínuo, sem parar (~2:15–2:30/100m)',
+        note:'Bike mais longa que semana passada, últimos 10min um pouco mais firme. Corrida saindo da bike em ritmo confortável.',
+        second:{mod:'Bike',zone:'Z2',title:'Bike',dur:65,distLabel:'~26km',type:'bike',distKm:26},
+        third:{mod:'Corrida',zone:'Z2',title:'Corrida',dur:23,distLabel:'3,5km',type:'run',distKm:3.5,pace:'6:25–6:45/km'}},
+      {mod:'Corrida',zone:'Z2',title:'Longão',dur:55,distLabel:'8km',type:'run',distKm:8,pace:'6:45–7:05/km, conversando',
+        note:'+1km. Se as pernas chegarem bem no fim, a progressão está certa.'}
     ],
     9:[
-      {mod:'Natação',zone:'Z1-Z2',title:'Deload',dur:25,distLabel:'600m',type:'swim',distKm:0.6,pace:'2:10–2:25/100m',
-        note:'Deload da fase Intensidade — depois de duas semanas de intervalado, o corpo pede uma pausa relativa. Nade tranquilo.'},
-      {mod:'Corrida',zone:'Z1-Z2',title:'Rodagem fácil',dur:22,distLabel:'3km',type:'run',distKm:3,pace:'6:55–7:15/km, contínuo',
-        note:'Sem intervalado essa semana, sem culpa nenhuma.'},
-      {mod:'Duplo',zone:'Z1',title:'Duplo reduzido',dur:22,distLabel:'500m + 12min',type:'swim',distKm:0.5,
-        note:'Use essa semana pra observar como o corpo reage quando não está no limite — é informação útil também.',
-        second:{mod:'Corrida',zone:'Z1',title:'Corrida leve',dur:12,distLabel:'1,5km',type:'run',distKm:1.5,pace:'7:05–7:25/km, tranquilo'}},
-      {mod:'Bike',zone:'Z2',title:'Leve',dur:40,distLabel:'15km',type:'bike',distKm:15,
-        note:'Pedalada tranquila antes do bloco de Pico. Aproveite pra revisar a bike — freios, pneus, corrente — antes da carga subir de novo.'},
-      {mod:'Corrida',zone:'Z2',title:'Fechamento',dur:28,distLabel:'3,8km',type:'run',distKm:3.8,pace:'6:30–6:45/km, contínuo',
-        note:'Fecha a fase Intensidade. As próximas três semanas são as mais pesadas do plano — essa recuperação é o combustível pra elas.'}
+      {mod:'Natação',zone:'Z3',title:'Intervalado',dur:40,distLabel:'1100m',type:'swim',distKm:1.1,pace:'1:50–2:05/100m nas repetições',
+        note:'200m solto + 10x100m forte (20s de descanso) + 100m solto.'},
+      {mod:'Corrida',zone:'Z3',title:'Intervalado',dur:42,distLabel:'6,5km',type:'run',distKm:6.5,pace:'5x600m a 5:25–5:40/km, 2min trote entre tiros',
+        note:'1,5km aquecimento + 5x600m + 1,5km desaquecimento. Tiros mais longos que na semana 7, mesmo esforço.'},
+      {mod:'Bike',zone:'Z3',title:'Ritmo de prova',dur:40,distLabel:'~17km',type:'bike',distKm:17,
+        note:'10min leve + 2x10min no ritmo que você imagina sustentar na prova + 5min leve entre. Descubra esse ritmo aqui, não no dia.'},
+      {mod:'Natação',zone:'Z1-Z2',title:'Técnica (piscina)',dur:25,distLabel:'700m',type:'swim',distKm:0.7,pace:'2:10–2:25/100m',
+        note:'Nado leve de técnica: respiração bilateral, pegada longa, rolamento. Amanhã é simulado no lago — hoje é pra chegar fresco.'},
+      {mod:'Simulado',zone:'Z2',title:'Simulado no lago',dur:23,distLabel:'900m + 32km + 4km',type:'swim',distKm:0.9,pace:'contínuo, sem parar (~2:15–2:30/100m)',
+        note:'Mais de 750m no nado pra tirar o medo da distância. Bike de 80min com os últimos 15min em ritmo de prova. Semana mais pesada até aqui.',
+        second:{mod:'Bike',zone:'Z2-Z3',title:'Bike',dur:80,distLabel:'~32km',type:'bike',distKm:32},
+        third:{mod:'Corrida',zone:'Z2',title:'Corrida',dur:26,distLabel:'4km',type:'run',distKm:4,pace:'6:20–6:40/km'}},
+      {mod:'Corrida',zone:'Z2',title:'Longão',dur:62,distLabel:'9km',type:'run',distKm:9,pace:'6:45–7:05/km, conversando',
+        note:'Quase nos 10km. Hidrate antes e leve água se estiver quente.'}
     ],
     10:[
-      {mod:'Natação',zone:'Z3',title:'Ritmo de prova',dur:30,distLabel:'750m contínuo',type:'swim',distKm:0.75,pace:'1:50–2:05/100m',
-        note:'Primeira vez nadando os 750m da prova inteira, contínuo, sem parar. Cronometra — esse número vira sua referência daqui pra frente.'},
-      {mod:'Duplo',zone:'Z3',title:'Corrida forte + bike',dur:30,distLabel:'30min + 12min',type:'run',distKm:4,pace:'5x600m a 5:25–5:40/km, 2min trote de recuperação entre séries',
-        note:'Corrida forte de manhã, bike de manutenção curta depois — o volume de bike sobe em degrau outra vez, igual aconteceu na semana 7. Volume de corrida mais alto que qualquer semana anterior — o pico do plano começando.',
-        second:{mod:'Bike',zone:'Z2',title:'Bike manutenção',dur:12,distLabel:'5km',type:'bike',distKm:5}},
-      {mod:'Duplo',zone:'Z2',title:'Brick de meio de semana',dur:38,distLabel:'900m + 18min',type:'swim',distKm:0.9,
-        note:'Continua servindo de manutenção enquanto o fim de semana carrega o esforço mais pesado.',
-        second:{mod:'Corrida',zone:'Z2',title:'Corrida pós-nado',dur:18,distLabel:'2,3km',type:'run',distKm:2.3,pace:'6:15–6:30/km'}},
-      {mod:'Bike',zone:'Z2-Z3',title:'Retomada pós-deload',dur:32,distLabel:'12km',type:'bike',distKm:12,
-        note:'Depois do deload da semana passada, o volume de bike volta a subir em degrau — ainda curta de propósito, sem trechos longos em ritmo de prova ainda.'},
-      {mod:'Brick',zone:'Z3',title:'Rumo à distância de prova (e além)',dur:38,distLabel:'9km + 6km',type:'bike',distKm:9,
-        note:'Bike ainda curta no brick, mas a corrida já passa da distância de prova (6km vs 5km da prova). Primeira vez extrapolando o volume real — objetivo é ganhar margem de segurança, não é ritmo de prova o tempo todo.',
-        second:{mod:'Corrida',zone:'Z3',title:'Corrida pós-bike — além da distância de prova',dur:34,distLabel:'6km',type:'run',distKm:6,pace:'6:00–6:15/km, contínuo — foco em completar, não em ritmo forte'}}
+      {mod:'Natação',zone:'Z1-Z2',title:'Deload',dur:28,distLabel:'700m',type:'swim',distKm:0.7,pace:'2:10–2:25/100m',
+        note:'Nado solto. Semana de deload: menos volume, nada de intensidade.'},
+      {mod:'Corrida',zone:'Z2',title:'Rodagem',dur:35,distLabel:'5km',type:'run',distKm:5,pace:'6:40–6:55/km, contínuo',
+        note:'5km confortáveis. Sem tiro essa semana.'},
+      {mod:'Bike',zone:'Z1-Z2',title:'Leve',dur:35,distLabel:'~13km',type:'bike',distKm:13,
+        note:'Pedalada solta, foco em postura e cadência.'},
+      {mod:'Natação',zone:'Z2',title:'Teste 750m',dur:30,distLabel:'750m contínuo',type:'swim',distKm:0.75,pace:'anote o tempo total',
+        note:'Distância de prova, contínuo, ritmo firme mas sustentável. Anote o tempo: é a sua referência pras próximas semanas.'},
+      {mod:'Simulado',zone:'Z1-Z2',title:'Simulado leve',dur:15,distLabel:'600m + 18km + 2,5km',type:'swim',distKm:0.6,pace:'contínuo, sem parar (~2:15–2:30/100m)',
+        note:'Deload: simulado curto e tranquilo. Foque só em transições limpas.',
+        second:{mod:'Bike',zone:'Z1-Z2',title:'Bike',dur:45,distLabel:'~18km',type:'bike',distKm:18},
+        third:{mod:'Corrida',zone:'Z1-Z2',title:'Corrida',dur:17,distLabel:'2,5km',type:'run',distKm:2.5,pace:'6:45–7:00/km'}},
+      {mod:'Corrida',zone:'Z2',title:'Longão curto',dur:35,distLabel:'5km',type:'run',distKm:5,pace:'6:45–7:00/km',
+        note:'Deload vale pra corrida também.'}
     ],
     11:[
-      {mod:'Natação',zone:'Z3',title:'Ritmo de prova',dur:28,distLabel:'750m',type:'swim',distKm:0.75,pace:'1:50–2:05/100m',
-        note:'Segunda vez nos 750m contínuos. Compare o tempo com a semana passada — a diferença, mesmo pequena, é real.'},
-      {mod:'Duplo',zone:'Z3',title:'Corrida + bike',dur:32,distLabel:'32min + 20min',type:'run',distKm:4.3,pace:'4x800m a 5:30–5:45/km, 2min trote de recuperação entre séries',
-        note:'Semana de maior carga do plano inteiro. Bike do duplo já mais robusta que semana passada — o degrau continua subindo. Durma bem — é onde o corpo mais precisa de recuperação de qualidade.',
-        second:{mod:'Bike',zone:'Z2',title:'Bike manutenção',dur:20,distLabel:'8km',type:'bike',distKm:8}},
-      {mod:'Duplo',zone:'Z2',title:'Maior duplo do plano',dur:56,distLabel:'1000m + 38min',type:'swim',distKm:1,
-        note:'Se sentir cansaço acumulado, é esperado — é assim que o pico funciona. A corrida de hoje é mais longa que o normal de propósito — é o teste de volume que você pediu, feito num dia sem duplo de velocidade.',
-        second:{mod:'Corrida',zone:'Z2',title:'Corrida contínua — teste de volume',dur:38,distLabel:'6km',type:'run',distKm:6,pace:'6:20–6:35/km, contínuo, sem pressa'}},
-      {mod:'Bike',zone:'Z2-Z3',title:'Longa',dur:48,distLabel:'19km',type:'bike',distKm:19,
-        note:'Pico de volume na bike, alcançado em degraus nas últimas semanas em vez de um salto só. Depois dessa semana, o volume começa a cair até a prova.'},
-      {mod:'Brick',zone:'Z3',title:'Quase lá — e a maior corrida do plano',dur:68,distLabel:'15km + 7km',type:'bike',distKm:15,
-        note:'A bike do brick já bem mais robusta — quase a distância de prova. Não precisa ser no ritmo de prova completo — objetivo é confirmar que o corpo aguenta o volume. Os 7km de corrida são o pico de distância do plano inteiro (40% a mais que a prova) — depois dessa semana o volume só cai rumo ao Polimento.',
-        second:{mod:'Corrida',zone:'Z3',title:'Corrida pós-bike — pico de distância',dur:40,distLabel:'7km',type:'run',distKm:7,pace:'5:55–6:15/km, sustentado — não precisa ser tudo no ritmo forte do início'}}
+      {mod:'Natação',zone:'Z3',title:'Ritmo de prova',dur:42,distLabel:'1200m',type:'swim',distKm:1.2,pace:'750m a 1:55–2:10/100m',
+        note:'200m solto + 750m contínuo em ritmo de prova + 4x50m forte + 100m solto.'},
+      {mod:'Corrida',zone:'Z3',title:'Intervalado',dur:45,distLabel:'7km',type:'run',distKm:7,pace:'4x800m a 5:30–5:45/km, 2min trote entre tiros',
+        note:'1,5km aquecimento + 4x800m + 1,5km desaquecimento.'},
+      {mod:'Bike',zone:'Z3',title:'Ritmo de prova',dur:50,distLabel:'~20km',type:'bike',distKm:20,
+        note:'10min leve + 3x8min em ritmo de prova com 3min leve entre + soltar.'},
+      {mod:'Natação',zone:'Z1-Z2',title:'Técnica (piscina)',dur:28,distLabel:'800m',type:'swim',distKm:0.8,pace:'2:10–2:25/100m',
+        note:'Nado leve de técnica: respiração bilateral, pegada longa, rolamento. Amanhã é simulado no lago — hoje é pra chegar fresco.'},
+      {mod:'Simulado',zone:'Z2-Z3',title:'Simulado no lago',dur:25,distLabel:'1000m + 36km + 4km',type:'swim',distKm:1.0,pace:'contínuo, sem parar (~2:15–2:30/100m)',
+        note:'Bike de 90min com os últimos 20min em ritmo de prova; corrida firme saindo da bike. Teste aqui o que vai comer e beber na prova.',
+        second:{mod:'Bike',zone:'Z2-Z3',title:'Bike',dur:90,distLabel:'~36km',type:'bike',distKm:36},
+        third:{mod:'Corrida',zone:'Z2-Z3',title:'Corrida',dur:25,distLabel:'4km',type:'run',distKm:4,pace:'6:10–6:25/km'}},
+      {mod:'Corrida',zone:'Z2',title:'Longão — 10km',dur:69,distLabel:'10km',type:'run',distKm:10,pace:'6:45–7:05/km, conversando',
+        note:'Primeiros 10km do ciclo, no dia seguinte ao simulado. Ritmo de conversa: aqui o objetivo é volume, não velocidade.'}
     ],
     12:[
-      {mod:'Natação',zone:'Z3',title:'Simulação — ritmo de prova',dur:25,distLabel:'750m',type:'swim',distKm:0.75,pace:'1:50–2:05/100m',
-        note:'Última semana de Pico. Nade os 750m como se fosse o dia da prova, incluindo a largada mais acelerada dos primeiros 100m.'},
-      {mod:'Duplo',zone:'Z2-Z3',title:'Corrida + bike',dur:25,distLabel:'25min + 20min',type:'run',distKm:3.3,pace:'20min contínuo a 6:00–6:15/km',
-        note:'Volume começando a cair de propósito — primeiro sinal do polimento chegando, mesmo ainda na fase Pico.',
-        second:{mod:'Bike',zone:'Z2',title:'Bike leve',dur:20,distLabel:'8km',type:'bike',distKm:8}},
-      {mod:'Duplo',zone:'Z2',title:'Brick reduzido',dur:30,distLabel:'700m + 15min',type:'swim',distKm:0.7,
-        note:'Reduzindo o brick de meio de semana. O trabalho pesado já foi feito — agora é sobre chegar fresco, não acumular mais fadiga.',
-        second:{mod:'Corrida',zone:'Z2',title:'Corrida pós-nado',dur:15,distLabel:'2km',type:'run',distKm:2,pace:'6:15–6:30/km'}},
-      {mod:'Bike',zone:'Z2',title:'Manutenção',dur:45,distLabel:'16km',type:'bike',distKm:16,
-        note:'Bike mais curta que as últimas semanas — intencional. A partir daqui, menos é mais.'},
-      {mod:'Brick',zone:'Z3',title:'Ensaio geral',dur:70,distLabel:'20km + 5km',type:'bike',distKm:20,
-        note:'Última simulação completa da distância de prova antes do polimento. Use pra testar o que vai comer e vestir no dia — o ensaio geral.',
-        second:{mod:'Corrida',zone:'Z3',title:'Corrida pós-bike',dur:26,distLabel:'5km',type:'run',distKm:5,pace:'5:55–6:10/km — ensaio no ritmo real de prova'}}
+      {mod:'Natação',zone:'Z3',title:'Ritmo de prova',dur:42,distLabel:'1200m',type:'swim',distKm:1.2,pace:'12x100m a 1:55–2:05/100m',
+        note:'200m solto + 12x100m em ritmo de prova (15s de descanso) + 100m solto.'},
+      {mod:'Corrida',zone:'Z3',title:'Tempo run',dur:45,distLabel:'7km',type:'run',distKm:7,pace:'4km contínuos a 5:55–6:10/km',
+        note:'1,5km aquecimento + 4km em ritmo de prova + 1,5km desaquecimento.'},
+      {mod:'Bike',zone:'Z2',title:'Rodagem',dur:50,distLabel:'~19km',type:'bike',distKm:19,
+        note:'Z2 constante. Dia de volume, não de intensidade — o domingo é o ensaio.'},
+      {mod:'Natação',zone:'Z1-Z2',title:'Solto (piscina)',dur:22,distLabel:'600m',type:'swim',distKm:0.6,pace:'2:10–2:25/100m',
+        note:'Curto e leve. Amanhã é o ensaio geral.'},
+      {mod:'Simulado',zone:'Z3',title:'ENSAIO GERAL — distância de prova',dur:17,distLabel:'750m + 20km + 5km',type:'swim',distKm:0.75,pace:'1:55–2:10/100m',
+        note:'Distância de prova completa no lago: 750m + 20km + 5km, no ritmo de prova. Roupa, tênis, comida, numeral e transição exatamente como no dia. Anote os tempos de cada parte e das transições.',
+        second:{mod:'Bike',zone:'Z3',title:'Bike',dur:50,distLabel:'~20km',type:'bike',distKm:20},
+        third:{mod:'Corrida',zone:'Z3',title:'Corrida',dur:30,distLabel:'5km',type:'run',distKm:5,pace:'5:55–6:10/km — ritmo real de prova'}},
+      {mod:'Corrida',zone:'Z1-Z2',title:'Rodagem regenerativa',dur:42,distLabel:'6km',type:'run',distKm:6,pace:'6:55–7:15/km',
+        note:'Dia seguinte ao ensaio: corrida bem leve só pra soltar.'}
     ],
     13:[
-      {mod:'Natação',zone:'Z1',title:'Ativação',dur:20,distLabel:'400m',type:'swim',distKm:0.4,pace:'2:20–2:35/100m',
-        note:'Nado curto e leve — só pra manter a sensação da água, sem objetivo de volume ou intensidade.'},
-      {mod:'Corrida',zone:'Z1',title:'Corrida fácil',dur:18,distLabel:'2,5km',type:'run',distKm:2.5,pace:'7:00–7:20/km, bem tranquilo',
-        note:'Curta e fácil. Estranho treinar tão pouco depois de semanas pesadas — é assim mesmo que o polimento funciona.'},
-      {mod:'Bike',zone:'Z1-Z2',title:'Ativação',dur:25,distLabel:'8km + 3 tiros curtos',type:'bike',distKm:8,
-        note:'Pedalada tranquila com 3 tiros curtos de 30s em ritmo forte, só pra manter as pernas lembradas de acelerar.'},
-      {mod:'Descanso',zone:'',title:'Descanso',dur:0,distLabel:'',type:null,distKm:0,
-        note:'Descanso de verdade — nem caminhada leve é obrigatória. O corpo está guardando energia pra prova.'},
-      {mod:'Corrida',zone:'Z1',title:'Últimos tiros',dur:15,distLabel:'2km + 2 tiros ritmo prova',type:'run',distKm:2,pace:'trote solto a 7:00/km + 2x200m a 5:50–6:05/km (ritmo de prova)',
-        note:'Última corrida antes da semana da prova. Dois tiros curtos em ritmo de prova só pra lembrar o corpo da sensação — nada de cansar.'}
+      {mod:'Natação',zone:'Z2-Z3',title:'Séries',dur:42,distLabel:'1200m',type:'swim',distKm:1.2,pace:'1:55–2:10/100m nas repetições',
+        note:'200m solto + 3x300m firme (30s de descanso) + 100m solto.'},
+      {mod:'Corrida',zone:'Z3',title:'Intervalado',dur:40,distLabel:'6km',type:'run',distKm:6,pace:'5x600m a 5:25–5:40/km, 2min trote',
+        note:'Último intervalado longo antes da prova.'},
+      {mod:'Bike',zone:'Z2-Z3',title:'Blocos',dur:50,distLabel:'~20km',type:'bike',distKm:20,
+        note:'10min leve + 2x12min em ritmo de prova com 5min leve entre.'},
+      {mod:'Natação',zone:'Z1-Z2',title:'Técnica (piscina)',dur:28,distLabel:'800m',type:'swim',distKm:0.8,pace:'2:10–2:25/100m',
+        note:'Nado leve de técnica: respiração bilateral, pegada longa, rolamento. Amanhã é simulado no lago — hoje é pra chegar fresco.'},
+      {mod:'Simulado',zone:'Z2',title:'Simulado no lago',dur:23,distLabel:'900m + 36km + 3km',type:'swim',distKm:0.9,pace:'contínuo, sem parar (~2:15–2:30/100m)',
+        note:'Último simulado longo: bike de 90min em Z2. Ritmo controlado, porque amanhã é o maior longão do plano.',
+        second:{mod:'Bike',zone:'Z2',title:'Bike',dur:90,distLabel:'~36km',type:'bike',distKm:36},
+        third:{mod:'Corrida',zone:'Z2',title:'Corrida',dur:20,distLabel:'3km',type:'run',distKm:3,pace:'6:25–6:45/km'}},
+      {mod:'Corrida',zone:'Z2',title:'Longão — pico de 12km',dur:84,distLabel:'12km',type:'run',distKm:12,pace:'6:45–7:10/km, conversando',
+        note:'Maior corrida do plano, no ritmo de conversa. Também já serve de base pro 70.3. Depois daqui o volume só cai.'}
     ],
     14:[
-      {mod:'Natação',zone:'Z1',title:'Ativação final',dur:15,distLabel:'300m',type:'swim',distKm:0.3,pace:'2:20–2:35/100m',
-        note:'Último nado antes da prova. Curtinho, só pra sentir a água — nada de cansar.'},
+      {mod:'Natação',zone:'Z2',title:'Polimento',dur:32,distLabel:'900m',type:'swim',distKm:0.9,pace:'4x100m a 1:55–2:05/100m',
+        note:'Volume menor, mas com alguns trechos em ritmo de prova pra manter a sensação.'},
+      {mod:'Corrida',zone:'Z3',title:'Ritmo de prova',dur:33,distLabel:'5km',type:'run',distKm:5,pace:'3x1km a 5:55–6:05/km, 2min trote',
+        note:'Pouco volume, ritmo de prova.'},
+      {mod:'Bike',zone:'Z2',title:'Rodagem curta',dur:35,distLabel:'~14km',type:'bike',distKm:14,
+        note:'Z2 com 3x2min em ritmo de prova.'},
+      {mod:'Natação',zone:'Z1-Z2',title:'Solto',dur:28,distLabel:'750m',type:'swim',distKm:0.75,pace:'2:10–2:25/100m',
+        note:'Nado solto, sem relógio.'},
+      {mod:'Simulado',zone:'Z2-Z3',title:'Simulado curto',dur:15,distLabel:'600m + 16km + 2,5km',type:'swim',distKm:0.6,pace:'contínuo, sem parar (~2:15–2:30/100m)',
+        note:'Simulado curto com trechos em ritmo de prova. Último treino no lago antes da prova: confira óculos, touca e o que vai usar.',
+        second:{mod:'Bike',zone:'Z2-Z3',title:'Bike',dur:40,distLabel:'~16km',type:'bike',distKm:16},
+        third:{mod:'Corrida',zone:'Z2-Z3',title:'Corrida',dur:15,distLabel:'2,5km',type:'run',distKm:2.5,pace:'6:00–6:10/km'}},
+      {mod:'Corrida',zone:'Z2',title:'Rodagem',dur:35,distLabel:'5km',type:'run',distKm:5,pace:'6:40–6:55/km',
+        note:'Último longão, agora curto. É o polimento funcionando.'}
+    ],
+    15:[
+      {mod:'Natação',zone:'Z1-Z2',title:'Ativação',dur:22,distLabel:'600m',type:'swim',distKm:0.6,pace:'4x50m em ritmo de prova',
+        note:'Curto, com alguns 50m em ritmo de prova. Nada de cansar.'},
+      {mod:'Corrida',zone:'Z1-Z2',title:'Ativação',dur:26,distLabel:'4km',type:'run',distKm:4,pace:'trote 7:00/km + 2x400m a 5:55–6:05/km',
+        note:'Últimos tiros curtos só pra lembrar as pernas do ritmo.'},
+      {mod:'Bike',zone:'Z1-Z2',title:'Ativação',dur:30,distLabel:'~12km',type:'bike',distKm:12,
+        note:'Pedal tranquilo com 3 tiros de 30s. Confira pneu, freio e marchas.'},
       {mod:'Descanso',zone:'',title:'Descanso',dur:0,distLabel:'',type:null,distKm:0,
-        note:'Descanso. Sério — hoje não é dia de "só uma caminhadinha". É dia de nada.'},
-      {mod:'Corrida',zone:'Z1',title:'Ativação',dur:12,distLabel:'1,5km + 2 tiros curtos',type:'run',distKm:1.5,pace:'trote solto a 7:00/km + 2x150m a 5:55–6:10/km',
-        note:'Últimos tiros curtos em ritmo de prova, só pra lembrar as pernas da sensação. Depois disso, é esperar.'},
-      {mod:'Descanso',zone:'',title:'Descanso',dur:0,distLabel:'',type:null,distKm:0,
-        note:'Descanso total. A prova é daqui a poucos dias — momento de confiar no trabalho que você já fez.'},
-      {mod:'Bike',zone:'Z1',title:'Ativação leve',dur:15,distLabel:'5km + 2-3 tiros curtos',type:'bike',distKm:5,
-        note:'Última pedalada antes da prova, bem curta. A partir de amanhã é só logística: equipamento, alimentação, sono.'}
+        note:'Descanso total. Separe o equipamento hoje, não amanhã.'},
+      {mod:'Bike',zone:'Z1',title:'Pré-prova',dur:15,distLabel:'15min + 8min',type:'bike',distKm:5,
+        note:'15min de bike solta + 8min de trote. Só pra soltar. Depois: kit, numeral, check-in da bike se houver.',
+        second:{mod:'Corrida',zone:'Z1',title:'Trote',dur:8,distLabel:'1km',type:'run',distKm:1,pace:'7:00/km, solto'}},
+      {mod:'Prova',zone:'',title:'🏁 SPRINT MSK — DIA DA PROVA',dur:0,distLabel:'750m · 20km · 5km',type:null,distKm:0,
+        note:'É hoje. Siga o plano da seção "Dia da prova" e não teste nada novo.'}
     ]
   };
 
@@ -977,8 +1054,10 @@
 
   // Week 1 stays the real historical start (27/08 Thu – 30/08 Dom, 4 days — already reconciled
   // with logged activities, no rest-day pattern applied since it already happened).
-  // From week 2 onward: weeks run Monday–Sunday, Monday and Sunday are rest, training is Tue–Sat —
-  // matching Diego's real schedule so joint sessions land on the right days/modalities.
+  // From week 2 onward: weeks run Monday–Sunday (real calendar dates, computed — never hardcoded).
+  // Weeks 2–5 (already done): Tue–Sat training, Mon/Sun rest.
+  // Week 6 onward: Monday is the only fixed rest day, training Tue–Sun (6 slots).
+  const SIX_DAY_FROM = 6; // first week with Sunday training
   const WEEK2_START = addDays(START, 4); // 31/08 (Mon), the day after the 4-day intro
 
   function weekNumberFor(date){
@@ -1010,7 +1089,8 @@
     const block = weekBlockDates(weekNum);
     const need = (WEEKS[weekNum]||[]).length;
     if(weekNum === 1) return block.slice(0, need);
-    const filtered = block.filter(d=>{ const wd=d.getDay(); return wd>=2 && wd<=6; });
+    const sixDay = weekNum >= SIX_DAY_FROM;
+    const filtered = block.filter(d=>{ const wd=d.getDay(); return sixDay ? wd!==1 : (wd>=2 && wd<=6); });
     return filtered.slice(0, need);
   }
 
@@ -1037,8 +1117,12 @@
   }
   let checkins = {};
   let completed = {};
+  // Check-ins informados no chat (só entram se você ainda não tiver registro nesse dia)
+  const SEED_CHECKINS = { '2026-10-01': {weight:83.0} };
   function loadStorage(){
     checkins = storageGet('checkins') || {};
+    Object.keys(SEED_CHECKINS).forEach(k=>{ if(!checkins[k]) checkins[k]=Object.assign({},SEED_CHECKINS[k]); });
+    saveCheckins();
     completed = storageGet('completed') || {};
     renderCheckinLog(); renderWeightChart(); renderWeekStats(); updateWeightNowLabel(); renderTodayVitals();
   }
@@ -1162,6 +1246,9 @@
     {id:'20059532795', date:'2026-09-06', time:'07:23', mod:'Musculação', title:'Musculação matinal', distKm:null, durMin:53.45, cal:243, hr:102, pace:null},
     {id:'20072212200', date:'2026-09-07', time:'07:36', mod:'Bike', title:'Pedalada matinal', distKm:10.09, durMin:24.9, cal:229, hr:133, pace:null},
     {id:'20072211825', date:'2026-09-07', time:'08:07', mod:'Corrida', title:'Corrida matinal', distKm:4.01, durMin:26.1, cal:345, hr:160, pace:'6:31/km'},
+    // Sábado 26/09 — simulado no Lago Paranoá (nado + corrida; bike na revisão). Dados do print enviado em 01/10.
+    {id:'sim-0926-swim', date:'2026-09-26', time:'09:37', mod:'Natação', title:'Natação matinal (lago)', distKm:0.854, durMin:20.77, cal:253, hr:null, pace:'2:25/100m'},
+    {id:'sim-0926-run', date:'2026-09-26', time:'', mod:'Corrida', title:'Corrida pós-nado (lago)', distKm:5.0, durMin:30.98, cal:null, hr:162, pace:'6:17/km'},
     {id:'20085940003', date:'2026-09-08', time:'06:35', mod:'Musculação', title:'Musculação matinal', distKm:null, durMin:64.55, cal:391, hr:115, pace:null}
   ];
   let activities = [];
@@ -1191,7 +1278,7 @@
       if(idx<0) return; // not a training slot day (falls on a rest Mon/Sun, or beyond this week's slots)
       const slot = (WEEKS[wk]||[])[idx];
       if(!slot || slot.mod==='Descanso') return;
-      const modsInSlot = [slot.mod]; if(slot.second) modsInSlot.push(slot.second.mod);
+      const modsInSlot = [slot.mod]; [slot.second,slot.third].forEach(x=>{ if(x) modsInSlot.push(x.mod); });
       const dayActs = byDate[dateKey];
       // Any real activity on a past day now replaces the prescription and counts as done.
       completed[dateKey] = true;
@@ -1266,7 +1353,7 @@
         });
       } else {
         if(d.type==='swim') swim+=d.distKm; if(d.type==='bike') bike+=d.distKm; if(d.type==='run') run+=d.distKm;
-        if(d.second){ if(d.second.type==='swim') swim+=d.second.distKm; if(d.second.type==='bike') bike+=d.second.distKm; if(d.second.type==='run') run+=d.second.distKm; }
+        [d.second,d.third].forEach(x=>{ if(!x) return; if(x.type==='swim') swim+=x.distKm; if(x.type==='bike') bike+=x.distKm; if(x.type==='run') run+=x.distKm; });
       }
     });
     return {swim,bike,run};
@@ -1312,14 +1399,14 @@
       return;
     }
     const d = days[idx];
-    const icon = d.mod==='Natação'?'🏊':d.mod==='Corrida'?'🏃':d.mod==='Bike'?'🚴':'⚡';
+    const icon = d.mod==='Natação'?'🏊':d.mod==='Corrida'?'🏃':d.mod==='Bike'?'🚴':d.mod==='Prova'?'🏁':d.mod==='Simulado'?'🏊🚴🏃':'⚡';
     let html = '<div class="icon">'+icon+'</div><div class="info"><div class="t">'+d.title+'</div><div class="sub">'+(d.dur?d.dur+'min · ':'')+d.distLabel+(d.pace?' · '+d.pace:'')+'</div></div>';
     if(d.zone) html += '<div class="zone-badge">'+d.zone+'</div>';
     session.innerHTML = html;
-    if(d.second){
-      const icon2 = d.second.mod==='Natação'?'🏊':d.second.mod==='Corrida'?'🏃':d.second.mod==='Bike'?'🚴':'⚡';
-      session.innerHTML += '<div style="width:100%;border-top:1px dashed var(--border);margin-top:10px;padding-top:10px;display:flex;align-items:center;gap:16px;"><div class="icon">'+icon2+'</div><div class="info"><div class="t">'+d.second.title+'</div><div class="sub">'+(d.second.dur?d.second.dur+'min · ':'')+d.second.distLabel+(d.second.pace?' · '+d.second.pace:'')+'</div></div><div class="zone-badge">'+d.second.zone+'</div></div>';
-    }
+    [d.second,d.third].filter(Boolean).forEach(sec=>{
+      const icon2 = sec.mod==='Natação'?'🏊':sec.mod==='Corrida'?'🏃':sec.mod==='Bike'?'🚴':'⚡';
+      session.innerHTML += '<div style="width:100%;border-top:1px dashed var(--border);margin-top:10px;padding-top:10px;display:flex;align-items:center;gap:16px;"><div class="icon">'+icon2+'</div><div class="info"><div class="t">'+sec.title+'</div><div class="sub">'+(sec.dur?sec.dur+'min · ':'')+sec.distLabel+(sec.pace?' · '+sec.pace:'')+'</div></div><div class="zone-badge">'+sec.zone+'</div></div>';
+    });
   }
 
   // ============ WEIGHT CHART ============
@@ -1328,7 +1415,14 @@
     const maxW=START_WEIGHT+1, minW=GOAL_WEIGHT-2;
     function x(week){ return PAD+(week/TOTAL_WEEKS)*(W-PAD*2); }
     function y(weight){ return PAD+(1-(weight-minW)/(maxW-minW))*(H-PAD*2-10); }
-    let projPts=[]; for(let w=0; w<=TOTAL_WEEKS; w++) projPts.push([x(w), y(Math.max(GOAL_WEIGHT, START_WEIGHT-0.5*w))]);
+    const wk = Object.keys(checkins).filter(k=>checkins[k].weight!=null).sort();
+    const lastK = wk.length ? wk[wk.length-1] : null;
+    const baseW = lastK ? checkins[lastK].weight : START_WEIGHT;
+    const baseWeek = lastK ? Math.max(0,daysBetween(START,new Date(lastK+'T00:00:00'))/7) : 0;
+    const raceWeek = daysBetween(START,RACE)/7;
+    const rate = Math.max(0,(baseW-GOAL_WEIGHT)/Math.max(1,raceWeek-baseWeek));
+    let projPts=[[x(baseWeek), y(baseW)]];
+    for(let w=Math.ceil(baseWeek); w<=TOTAL_WEEKS; w++) projPts.push([x(w), y(Math.max(GOAL_WEIGHT, baseW-rate*(w-baseWeek)))]);
     const projPath = 'M '+projPts.map(p=>p[0]+' '+p[1]).join(' L ');
     const keys = Object.keys(checkins).filter(k=>checkins[k].weight!=null).sort();
     let actualPts = keys.map(k=>{ const d=new Date(k+'T00:00:00'); const w=Math.max(0,daysBetween(START,d)/7); return [x(w), y(checkins[k].weight)]; });
@@ -1443,7 +1537,7 @@
       if(trainIdx < 0){
         row.className = 'day-row rest';
         row.innerHTML = '<div class="dr-head"><span class="dr-wd">'+WD_SHORT[date.getDay()]+' '+fmtDate(date)+'</span></div>'+
-          '<div class="dr-title">Descanso</div><div class="dr-note">Dia fixo de descanso — mesmo padrão do Diego, pra treinar junto nos dias certos.</div>';
+          '<div class="dr-title">Descanso</div><div class="dr-note">'+(currentWeek>=SIX_DAY_FROM?'Segunda: único dia fixo de descanso da semana. Recuperar também é treino.':'Dia de descanso (nas semanas 2–5 eram dois por semana: segunda e domingo).')+'</div>';
         dayList.appendChild(row);
         return;
       }
@@ -1468,7 +1562,7 @@
         return;
       }
 
-      const cls = d.mod==='Descanso' ? 'rest' : (d.type||'');
+      const cls = d.mod==='Descanso' ? 'rest' : d.mod==='Prova' ? 'race' : (d.type||'');
       row.className = 'day-row '+cls;
       let html = '<div class="dr-head"><span class="dr-wd">'+WD_SHORT[date.getDay()]+' '+fmtDate(date)+'</span>';
       if(d.mod!=='Descanso') html += '<span class="dr-mod">'+d.mod+'</span><span class="dr-zone">'+d.zone+'</span>';
@@ -1477,9 +1571,9 @@
         html += '<div class="dr-title">Descanso</div><div class="dr-note">'+d.note+'</div>';
       } else {
         html += '<div class="dr-title">'+d.title+'</div><div class="dr-stats">'+(d.dur?d.dur+'min · ':'')+d.distLabel+'</div>'+(d.pace?'<div class="dr-pace">'+d.pace+'</div>':'')+'<div class="dr-note">'+d.note+'</div>';
-        if(d.second){
-          html += '<div class="dr-second"><div class="dr-head"><span class="dr-mod">'+d.second.mod+'</span><span class="dr-zone">'+d.second.zone+'</span></div><div class="dr-title" style="font-size:13.5px">'+d.second.title+'</div><div class="dr-stats">'+(d.second.dur?d.second.dur+'min · ':'')+d.second.distLabel+'</div>'+(d.second.pace?'<div class="dr-pace">'+d.second.pace+'</div>':'')+'</div>';
-        }
+        [d.second,d.third].filter(Boolean).forEach(sec=>{
+          html += '<div class="dr-second"><div class="dr-head"><span class="dr-mod">'+sec.mod+'</span><span class="dr-zone">'+sec.zone+'</span></div><div class="dr-title" style="font-size:13.5px">'+sec.title+'</div><div class="dr-stats">'+(sec.dur?sec.dur+'min · ':'')+sec.distLabel+'</div>'+(sec.pace?'<div class="dr-pace">'+sec.pace+'</div>':'')+'</div>';
+        });
         if(isPast && !dayActs.length){
           html += '<div class="dr-note" style="margin-top:6px;color:var(--text-faint)">Nenhuma atividade registrada pra esse dia ainda — sem marcar como feito.</div>';
         }
@@ -1497,6 +1591,159 @@
   document.getElementById('cnPrev').addEventListener('click', ()=>{ if(currentWeek>1){ currentWeek--; renderCarousel(); } });
   document.getElementById('cnNext').addEventListener('click', ()=>{ if(currentWeek<TOTAL_WEEKS){ currentWeek++; renderCarousel(); } });
 
+  // ============ VOLUME + LOAD CHARTS ============
+  const ZONE_IF = {'Z1':0.6,'Z1-Z2':0.65,'Z2':0.72,'Z2-Z3':0.8,'Z3':0.85};
+  function sessionParts(d){
+    const parts = [];
+    if(!d || d.mod==='Descanso') return parts;
+    if(d.mod==='Prova'){ parts.push({type:'race', dur:85, zone:'Z3'}); return parts; }
+    parts.push({type:d.type, dur:d.dur||0, zone:d.zone});
+    [d.second,d.third].forEach(x=>{ if(x) parts.push({type:x.type, dur:x.dur||0, zone:x.zone}); });
+    return parts;
+  }
+  function tssOf(dur, zone, fallbackIF){
+    const IF = ZONE_IF[zone] || fallbackIF || 0.72;
+    return (dur/60)*IF*IF*100;
+  }
+  function weekMinutes(w){
+    const out = {swim:0,bike:0,run:0};
+    (WEEKS[w]||[]).forEach(d=>{
+      sessionParts(d).forEach(p=>{
+        if(p.type==='race'){ out.swim+=18; out.bike+=45; out.run+=30; }
+        else if(out[p.type]!=null) out[p.type]+=p.dur;
+      });
+    });
+    return out;
+  }
+  function fmtMin(m){ const h=Math.floor(m/60), r=Math.round(m%60); return h+'h'+String(r).padStart(2,'0'); }
+
+  const tip = document.getElementById('chartTip');
+  function showTip(html, ev){
+    tip.innerHTML = html; tip.style.display='block';
+    const pad=14, tw=tip.offsetWidth, th=tip.offsetHeight;
+    let x = ev.clientX+pad, y = ev.clientY+pad;
+    if(x+tw > window.innerWidth-8) x = ev.clientX-tw-pad;
+    if(y+th > window.innerHeight-8) y = ev.clientY-th-pad;
+    tip.style.left=x+'px'; tip.style.top=y+'px';
+  }
+  function hideTip(){ tip.style.display='none'; }
+
+  function renderVolumeChart(){
+    const W=700,H=250,PL=40,PR=10,PT=16,PB=30;
+    const data=[]; for(let w=1;w<=TOTAL_WEEKS;w++){ const m=weekMinutes(w); data.push({w, ...m, total:m.swim+m.bike+m.run}); }
+    const maxT = Math.ceil(Math.max(...data.map(d=>d.total))/60)*60;
+    const slot=(W-PL-PR)/TOTAL_WEEKS, bw=Math.min(30, slot*0.62);
+    const y=v=>PT+(1-v/maxT)*(H-PT-PB);
+    let g='';
+    for(let v=0; v<=maxT; v+=60){
+      g+='<line x1="'+PL+'" x2="'+(W-PR)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="rgba(255,255,255,0.06)"/>';
+      g+='<text x="'+(PL-6)+'" y="'+(y(v)+3)+'" fill="var(--text-faint)" font-size="10" font-family="monospace" text-anchor="end">'+(v/60)+'h</text>';
+    }
+    const colors={swim:'var(--accent-2)',bike:'var(--phase-pico)',run:'var(--phase-construcao)'};
+    data.forEach((d,i)=>{
+      const cx=PL+slot*i+slot/2, x0=cx-bw/2;
+      let acc=0; const segs=['swim','bike','run'].filter(k=>d[k]>0);
+      segs.forEach((k,si)=>{
+        const top=y(acc+d[k]), bot=y(acc); const h=Math.max(0,bot-top-(si>0?2:0));
+        const isTop = si===segs.length-1;
+        const r = isTop?4:0;
+        const yy = top;
+        if(isTop && h>r){
+          g+='<path d="M'+x0+' '+(yy+h)+' V'+(yy+r)+' Q'+x0+' '+yy+' '+(x0+r)+' '+yy+' H'+(x0+bw-r)+' Q'+(x0+bw)+' '+yy+' '+(x0+bw)+' '+(yy+r)+' V'+(yy+h)+' Z" fill="'+colors[k]+'" opacity="'+(d.w===weekNow?1:0.82)+'"/>';
+        } else {
+          g+='<rect x="'+x0+'" y="'+yy+'" width="'+bw+'" height="'+h+'" fill="'+colors[k]+'" opacity="'+(d.w===weekNow?1:0.82)+'"/>';
+        }
+        acc+=d[k];
+      });
+      g+='<text x="'+cx+'" y="'+(H-12)+'" fill="'+(d.w===weekNow?'var(--text)':'var(--text-faint)')+'" font-size="10" font-family="monospace" text-anchor="middle" font-weight="'+(d.w===weekNow?'700':'400')+'">S'+d.w+'</text>';
+      if(d.w===weekNow) g+='<text x="'+cx+'" y="'+(y(d.total)-6)+'" fill="var(--text-dim)" font-size="10" font-family="monospace" text-anchor="middle">hoje</text>';
+      g+='<rect class="hit" data-i="'+i+'" x="'+(PL+slot*i)+'" y="'+PT+'" width="'+slot+'" height="'+(H-PT-PB)+'" fill="transparent"/>';
+    });
+    const el=document.getElementById('volChart');
+    el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Volume semanal planejado por modalidade">'+g+'</svg>';
+    el.querySelectorAll('.hit').forEach(r=>{
+      r.addEventListener('mousemove',ev=>{
+        const d=data[+r.dataset.i]; const dates=weekBlockDates(d.w);
+        showTip('<b>Semana '+d.w+'</b> · '+fmtDate(dates[0])+'–'+fmtDate(dates[dates.length-1])+(DELOAD_WEEKS.includes(d.w)?' · deload':'')+
+          '<div class="tr"><span class="sw" style="background:var(--accent-2)"></span>Natação<b>'+fmtMin(d.swim)+'</b></div>'+
+          '<div class="tr"><span class="sw" style="background:var(--phase-pico)"></span>Bike<b>'+fmtMin(d.bike)+'</b></div>'+
+          '<div class="tr"><span class="sw" style="background:var(--phase-construcao)"></span>Corrida<b>'+fmtMin(d.run)+'</b></div>'+
+          '<div class="tr tot">Total<b>'+fmtMin(d.total)+'</b></div>', ev);
+      });
+      r.addEventListener('mouseleave',hideTip);
+    });
+  }
+
+  function dailyTSSSeries(){
+    const days=[]; const end=new Date(RACE); end.setHours(0,0,0,0);
+    const planned={};
+    for(let w=1; w<=TOTAL_WEEKS; w++){
+      const dates=trainingDatesForWeek(w);
+      (WEEKS[w]||[]).forEach((d,i)=>{ if(!dates[i]) return; const k=isoKey(dates[i]);
+        planned[k]=(planned[k]||0)+sessionParts(d).reduce((s,p)=>s+tssOf(p.dur,p.zone, p.type==='race'?0.92:null),0); });
+    }
+    const actByDate={};
+    activities.forEach(a=>{ const t=tssOf(a.durMin||0, null, a.mod==='Musculação'?0.5:0.72); actByDate[a.date]=(actByDate[a.date]||0)+t; });
+    let ctl=15, atl=15;
+    for(let d=new Date(START); d<=end; d=addDays(d,1)){
+      const k=isoKey(d);
+      const real = actByDate[k];
+      const tss = (real!=null) ? real : (planned[k]||0);
+      ctl += (tss-ctl)/42; atl += (tss-atl)/7;
+      days.push({date:new Date(d), key:k, tss, ctl, atl, tsb:ctl-atl, real:real!=null});
+    }
+    return days;
+  }
+
+  function renderLoadChart(){
+    const days=dailyTSSSeries();
+    const W=700,H=260,PL=36,PR=10,PT=14,PB=28;
+    const vals=days.flatMap(d=>[d.ctl,d.atl,d.tsb]);
+    const maxV=Math.ceil(Math.max(...vals)/10)*10, minV=Math.floor(Math.min(0,...vals)/10)*10;
+    const x=i=>PL+i/(days.length-1)*(W-PL-PR);
+    const y=v=>PT+(1-(v-minV)/(maxV-minV))*(H-PT-PB);
+    let g='';
+    for(let v=minV; v<=maxV; v+=10){
+      g+='<line x1="'+PL+'" x2="'+(W-PR)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="'+(v===0?'rgba(255,255,255,0.22)':'rgba(255,255,255,0.05)')+'"/>';
+      if(v%20===0) g+='<text x="'+(PL-6)+'" y="'+(y(v)+3)+'" fill="var(--text-faint)" font-size="10" font-family="monospace" text-anchor="end">'+v+'</text>';
+    }
+    days.forEach((d,i)=>{ if(d.date.getDate()===1) g+='<text x="'+x(i)+'" y="'+(H-10)+'" fill="var(--text-faint)" font-size="10" font-family="monospace" text-anchor="middle">'+MONTHS[d.date.getMonth()]+'</text>'; });
+    const ti=days.findIndex(d=>d.key===isoKey(today));
+    if(ti>=0){ g+='<line x1="'+x(ti)+'" x2="'+x(ti)+'" y1="'+PT+'" y2="'+(H-PB)+'" stroke="var(--text-dim)" stroke-dasharray="3,4"/><text x="'+(x(ti)+4)+'" y="'+(PT+10)+'" fill="var(--text-dim)" font-size="10" font-family="monospace">hoje</text>'; }
+    g+='<text x="'+(x(days.length-1)-4)+'" y="'+(PT+10)+'" fill="var(--text-dim)" font-size="10" font-family="monospace" text-anchor="end">prova 🏁</text>';
+    const path=f=>'M'+days.map((d,i)=>x(i).toFixed(1)+' '+y(d[f]).toFixed(1)).join(' L');
+    g+='<path d="'+path('tsb')+'" fill="none" stroke="var(--accent)" stroke-width="2"/>';
+    g+='<path d="'+path('atl')+'" fill="none" stroke="var(--phase-pico)" stroke-width="2" opacity=".85"/>';
+    g+='<path d="'+path('ctl')+'" fill="none" stroke="var(--accent-2)" stroke-width="2.5"/>';
+    g+='<line id="lcX" x1="0" x2="0" y1="'+PT+'" y2="'+(H-PB)+'" stroke="var(--text-dim)" opacity="0"/>';
+    g+='<rect id="lcHit" x="'+PL+'" y="'+PT+'" width="'+(W-PL-PR)+'" height="'+(H-PT-PB)+'" fill="transparent"/>';
+    const el=document.getElementById('loadChart');
+    el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fitness, fadiga e forma até a prova">'+g+'</svg>';
+    const svg=el.querySelector('svg'), hit=el.querySelector('#lcHit'), cx=el.querySelector('#lcX');
+    hit.addEventListener('mousemove',ev=>{
+      const r=svg.getBoundingClientRect(); const sx=(ev.clientX-r.left)/r.width*W;
+      const i=Math.max(0,Math.min(days.length-1,Math.round((sx-PL)/(W-PL-PR)*(days.length-1))));
+      const d=days[i]; cx.setAttribute('x1',x(i)); cx.setAttribute('x2',x(i)); cx.setAttribute('opacity','.6');
+      showTip('<b>'+WD_SHORT[d.date.getDay()]+' '+fmtDateFull(d.date)+'</b>'+(d.real?' · real':'')+
+        '<div class="tr">Carga do dia<b>'+Math.round(d.tss)+' TSS</b></div>'+
+        '<div class="tr"><span class="sw" style="background:var(--accent-2)"></span>Fitness<b>'+d.ctl.toFixed(0)+'</b></div>'+
+        '<div class="tr"><span class="sw" style="background:var(--phase-pico)"></span>Fadiga<b>'+d.atl.toFixed(0)+'</b></div>'+
+        '<div class="tr"><span class="sw" style="background:var(--accent)"></span>Forma<b>'+(d.tsb>0?'+':'')+d.tsb.toFixed(0)+'</b></div>', ev);
+    });
+    hit.addEventListener('mouseleave',()=>{ hideTip(); cx.setAttribute('opacity','0'); });
+
+    const now = days[Math.max(0,ti)] || days[0];
+    const weekAgo = days[Math.max(0,ti-7)] || days[0];
+    const race = days[days.length-2] || days[days.length-1]; // manhã da prova = fim do dia anterior
+    const ramp = now.ctl - weekAgo.ctl;
+    const tsbLbl = t=> t>5?'descansado':t>-10?'equilibrado':t>-25?'carga produtiva':'fadiga alta';
+    document.getElementById('loadTiles').innerHTML =
+      '<div class="lt"><div class="l">Fitness hoje</div><div class="v">'+now.ctl.toFixed(0)+'</div><div class="s">'+(ramp>=0?'+':'')+ramp.toFixed(1)+' na última semana</div></div>'+
+      '<div class="lt"><div class="l">Fadiga hoje</div><div class="v">'+now.atl.toFixed(0)+'</div><div class="s">média de 7 dias</div></div>'+
+      '<div class="lt"><div class="l">Forma hoje</div><div class="v">'+(now.tsb>0?'+':'')+now.tsb.toFixed(0)+'</div><div class="s">'+tsbLbl(now.tsb)+'</div></div>'+
+      '<div class="lt"><div class="l">Forma no dia da prova</div><div class="v">'+(race.tsb>0?'+':'')+race.tsb.toFixed(0)+'</div><div class="s">projeção do plano</div></div>';
+  }
+
   // ============ TRAINING SUB-TABS (prova vs academia) ============
   document.querySelectorAll('.subtab-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -1508,14 +1755,16 @@
   });
 
   // ============ INIT ============
-  renderMacros();
   renderToday();
   renderWeekStats();
   renderCarousel();
   loadStorage();
+  renderMacros();
   loadActivities();
   renderActivities();
   renderToday();
+  renderVolumeChart();
+  renderLoadChart();
 })();
 </script>
 </body>
