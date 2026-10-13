@@ -350,6 +350,14 @@
   .load-tiles .l{font-size:11px; color:var(--text-faint);}
   .load-tiles .v{font-family:var(--font-display); font-size:22px; font-weight:700; color:var(--text);}
   .load-tiles .s{font-size:11px; color:var(--text-dim);}
+  .evo-table-wrap{overflow-x:auto;}
+  .evo-table td{vertical-align:top; white-space:nowrap;}
+  .evo-table .ev-m{font-family:var(--font-display); font-weight:700; color:var(--text);}
+  .evo-table .ev-s{font-size:11px; color:var(--text-faint);}
+  .evo-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  @media (max-width:820px){ .evo-grid{grid-template-columns:1fr;} }
+  .evo-h{font-size:12.5px; color:var(--text); font-weight:600; margin-bottom:4px;}
+  .evo-h span{color:var(--text-faint); font-weight:400; font-size:11px;}
   .chart-tip{position:fixed; z-index:80; display:none; pointer-events:none; background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:12px; color:var(--text); min-width:170px; box-shadow:0 6px 20px rgba(0,0,0,.4);}
   .chart-tip .tr{display:flex; align-items:center; gap:6px; color:var(--text-dim); margin-top:3px;}
   .chart-tip .tr b{margin-left:auto; color:var(--text); font-family:var(--font-display);}
@@ -592,7 +600,7 @@
       <span class="item"><span class="sw" style="background:var(--phase-construcao)"></span>Corrida</span>
     </div>
     <div class="chart-wrap vc-wrap" id="volChart"></div>
-    <div class="phase-note">A partir da semana 6, a estrutura é <b>segunda de descanso, terça a domingo de treino</b>. Sábado é o simulado no lago com as 3 modalidades e domingo é o longão de corrida. Os degraus para baixo são as semanas de deload (6 e 10) e o polimento (14 e 15).</div>
+    <div class="phase-note">A partir da semana 6, a estrutura é <b>segunda de descanso, terça a domingo de treino</b>. Sábado é sempre no lago, alternando simulado completo (24/10, 14/11, 28/11) com nado + bike longa sem corrida. Domingo é o longão de corrida. Os degraus para baixo são as semanas de deload (6 e 10) e o polimento (14 e 15).</div>
   </div>
   <div class="card">
     <h2>Carga de treino — forma × fadiga <span class="tag">estimativa por TSS</span></h2>
@@ -606,6 +614,27 @@
     <div class="phase-note"><b>Como ler:</b> CTL é o condicionamento acumulado (média de 42 dias), ATL é o cansaço recente (7 dias), TSB = CTL − ATL. TSB negativo é normal em semana de carga; o objetivo é chegar no dia da prova com TSB positivo. A carga é estimada pela duração × zona de cada sessão. Dias passados sem atividade registrada contam como feitos conforme o plano, então o gráfico fica mais fiel quanto mais treinos reais você registrar.</div>
   </div>
   <div class="chart-tip" id="chartTip"></div>
+
+  <!-- EVOLUTION -->
+  <div class="section-title">Evolução</div>
+  <div class="card">
+    <h2>Simulados no lago <span class="tag">tempos reais do Garmin</span></h2>
+    <div class="evo-table-wrap"><table class="macro evo-table" id="simTable"></table></div>
+    <div class="phase-note">T1 e T2 são calculados pela diferença entre o fim de uma atividade e o início da próxima no relógio. Nos treinos eles incluem deslocamento até a bike, então tendem a ser bem maiores que na prova. Mesmo assim, servem para comparar um simulado com o outro.</div>
+  </div>
+  <div class="card">
+    <h2>Projeção para a prova <span class="tag">com o que você já fez</span></h2>
+    <div class="load-tiles" id="projTiles"></div>
+    <div class="phase-note" id="projNote"></div>
+  </div>
+  <div class="card">
+    <h2>Ritmo por modalidade <span class="tag">cada ponto é um treino</span></h2>
+    <div class="evo-grid">
+      <div><div class="evo-h">🏃 Corrida — pace médio <span>(mais rápido ↑)</span></div><div class="chart-wrap vc-wrap" id="evoRun"></div></div>
+      <div><div class="evo-h">🏊 Natação — ritmo /100m <span>(mais rápido ↑ · ○ lago, ● piscina)</span></div><div class="chart-wrap vc-wrap" id="evoSwim"></div></div>
+      <div><div class="evo-h">🚴 Bike — velocidade média <span>(mais rápido ↑)</span></div><div class="chart-wrap vc-wrap" id="evoBike"></div></div>
+    </div>
+  </div>
 
   <div class="grid2">
     <!-- CHECK-IN -->
@@ -639,7 +668,7 @@
 
   <!-- ACTIVITY LOG -->
   <div class="card">
-    <h2>Atividades registradas <span class="tag">Garmin/Strava — colado manualmente</span></h2>
+    <h2>Atividades registradas <span class="tag">Garmin/Strava — importado</span></h2>
     <div id="activityMismatchNote"></div>
     <div id="activityList"></div>
     <div class="add-activity-form">
@@ -807,7 +836,7 @@
   const PHASES = [
     {name:'Base', weeks:[1,3], color:'var(--phase-base)', focus:'Adaptação, técnica de nado, base de corrida. Bike comprada — adaptação à estrada começa já na semana 2.'},
     {name:'Construção', weeks:[4,6], color:'var(--phase-construcao)', focus:'Volume sobe, primeiros duplos e primeiro brick leve.'},
-    {name:'Intensidade', weeks:[7,10], color:'var(--phase-intensidade)', focus:'6 dias por semana. Sábado é simulado no lago (nado + bike + corrida), domingo é longão de corrida. Bike longa cresce dentro do simulado. Semana 10 é deload.'},
+    {name:'Intensidade', weeks:[7,10], color:'var(--phase-intensidade)', focus:'6 dias por semana. Sábado sempre no lago: semanas alternam simulado completo (nado + bike + corrida) e nado + bike longa sem corrida. Domingo é longão de corrida. Semana 10 é deload.'},
     {name:'Pico', weeks:[11,13], color:'var(--phase-pico)', focus:'Maior carga do plano: longão até 12km, simulado com bike de até 90min e ensaio geral na distância de prova (750m + 20km + 5km) no lago em 14/11.'},
     {name:'Polimento', weeks:[14,15], color:'var(--phase-polimento)', focus:'Taper. Volume cai, intensidade de prova se mantém. Prova no domingo 06/12.'}
   ];
@@ -923,10 +952,9 @@
         note:'10min leve + 3x7min em Z3 com 3min leve entre. Cadência alta (85–95rpm) nos blocos.'},
       {mod:'Natação',zone:'Z1-Z2',title:'Técnica (piscina)',dur:25,distLabel:'700m',type:'swim',distKm:0.7,pace:'2:10–2:25/100m',
         note:'Nado leve de técnica: respiração bilateral, pegada longa, rolamento. Amanhã é simulado no lago — hoje é pra chegar fresco.'},
-      {mod:'Simulado',zone:'Z2',title:'Simulado no lago',dur:20,distLabel:'800m + 26km + 3,5km',type:'swim',distKm:0.8,pace:'contínuo, sem parar (~2:15–2:30/100m)',
-        note:'Bike mais longa que semana passada, últimos 10min um pouco mais firme. Corrida saindo da bike em ritmo confortável.',
-        second:{mod:'Bike',zone:'Z2',title:'Bike',dur:65,distLabel:'~26km',type:'bike',distKm:26},
-        third:{mod:'Corrida',zone:'Z2',title:'Corrida',dur:23,distLabel:'3,5km',type:'run',distKm:3.5,pace:'6:25–6:45/km'}},
+      {mod:'Lago + bike',zone:'Z2',title:'Lago + bike longa',dur:20,distLabel:'800m + 26km',type:'swim',distKm:0.8,pace:'contínuo, sem parar (~2:15–2:30/100m)',
+        note:'Semana sem corrida no sábado: nado no lago + 65min de bike em Z2, últimos 10min um pouco mais firme. A corrida fica pro longão de amanhã, com perna descansada. Coma algo aos 40min de bike.',
+        second:{mod:'Bike',zone:'Z2',title:'Bike longa',dur:65,distLabel:'~26km',type:'bike',distKm:26}},
       {mod:'Corrida',zone:'Z2',title:'Longão',dur:55,distLabel:'8km',type:'run',distKm:8,pace:'6:45–7:05/km, conversando',
         note:'+1km. Se as pernas chegarem bem no fim, a progressão está certa.'}
     ],
@@ -955,10 +983,9 @@
         note:'Pedalada solta, foco em postura e cadência.'},
       {mod:'Natação',zone:'Z2',title:'Teste 750m',dur:30,distLabel:'750m contínuo',type:'swim',distKm:0.75,pace:'anote o tempo total',
         note:'Distância de prova, contínuo, ritmo firme mas sustentável. Anote o tempo: é a sua referência pras próximas semanas.'},
-      {mod:'Simulado',zone:'Z1-Z2',title:'Simulado leve',dur:15,distLabel:'600m + 18km + 2,5km',type:'swim',distKm:0.6,pace:'contínuo, sem parar (~2:15–2:30/100m)',
-        note:'Deload: simulado curto e tranquilo. Foque só em transições limpas.',
-        second:{mod:'Bike',zone:'Z1-Z2',title:'Bike',dur:45,distLabel:'~18km',type:'bike',distKm:18},
-        third:{mod:'Corrida',zone:'Z1-Z2',title:'Corrida',dur:17,distLabel:'2,5km',type:'run',distKm:2.5,pace:'6:45–7:00/km'}},
+      {mod:'Lago + bike',zone:'Z1-Z2',title:'Lago + bike leve',dur:15,distLabel:'600m + 18km',type:'swim',distKm:0.6,pace:'contínuo, sem parar (~2:15–2:30/100m)',
+        note:'Deload: nado tranquilo no lago e bike leve. Sem corrida.',
+        second:{mod:'Bike',zone:'Z1-Z2',title:'Bike longa',dur:45,distLabel:'~18km',type:'bike',distKm:18}},
       {mod:'Corrida',zone:'Z2',title:'Longão curto',dur:35,distLabel:'5km',type:'run',distKm:5,pace:'6:45–7:00/km',
         note:'Deload vale pra corrida também.'}
     ],
@@ -971,10 +998,9 @@
         note:'10min leve + 3x8min em ritmo de prova com 3min leve entre + soltar.'},
       {mod:'Natação',zone:'Z1-Z2',title:'Técnica (piscina)',dur:28,distLabel:'800m',type:'swim',distKm:0.8,pace:'2:10–2:25/100m',
         note:'Nado leve de técnica: respiração bilateral, pegada longa, rolamento. Amanhã é simulado no lago — hoje é pra chegar fresco.'},
-      {mod:'Simulado',zone:'Z2-Z3',title:'Simulado no lago',dur:25,distLabel:'1000m + 36km + 4km',type:'swim',distKm:1.0,pace:'contínuo, sem parar (~2:15–2:30/100m)',
-        note:'Bike de 90min com os últimos 20min em ritmo de prova; corrida firme saindo da bike. Teste aqui o que vai comer e beber na prova.',
-        second:{mod:'Bike',zone:'Z2-Z3',title:'Bike',dur:90,distLabel:'~36km',type:'bike',distKm:36},
-        third:{mod:'Corrida',zone:'Z2-Z3',title:'Corrida',dur:25,distLabel:'4km',type:'run',distKm:4,pace:'6:10–6:25/km'}},
+      {mod:'Lago + bike',zone:'Z2',title:'Lago + bike 90min',dur:25,distLabel:'1000m + 36km',type:'swim',distKm:1.0,pace:'contínuo, sem parar (~2:15–2:30/100m)',
+        note:'Primeira bike de 90min: Z2 com os últimos 20min em ritmo de prova. Sem corrida hoje — amanhã é o longão de 10km. Gel ou banana a cada 40–45min + eletrólitos.',
+        second:{mod:'Bike',zone:'Z2-Z3',title:'Bike longa',dur:90,distLabel:'~36km',type:'bike',distKm:36}},
       {mod:'Corrida',zone:'Z2',title:'Longão — 10km',dur:69,distLabel:'10km',type:'run',distKm:10,pace:'6:45–7:05/km, conversando',
         note:'Primeiros 10km do ciclo, no dia seguinte ao simulado. Ritmo de conversa: aqui o objetivo é volume, não velocidade.'}
     ],
@@ -1003,10 +1029,9 @@
         note:'10min leve + 2x12min em ritmo de prova com 5min leve entre.'},
       {mod:'Natação',zone:'Z1-Z2',title:'Técnica (piscina)',dur:28,distLabel:'800m',type:'swim',distKm:0.8,pace:'2:10–2:25/100m',
         note:'Nado leve de técnica: respiração bilateral, pegada longa, rolamento. Amanhã é simulado no lago — hoje é pra chegar fresco.'},
-      {mod:'Simulado',zone:'Z2',title:'Simulado no lago',dur:23,distLabel:'900m + 36km + 3km',type:'swim',distKm:0.9,pace:'contínuo, sem parar (~2:15–2:30/100m)',
-        note:'Último simulado longo: bike de 90min em Z2. Ritmo controlado, porque amanhã é o maior longão do plano.',
-        second:{mod:'Bike',zone:'Z2',title:'Bike',dur:90,distLabel:'~36km',type:'bike',distKm:36},
-        third:{mod:'Corrida',zone:'Z2',title:'Corrida',dur:20,distLabel:'3km',type:'run',distKm:3,pace:'6:25–6:45/km'}},
+      {mod:'Lago + bike',zone:'Z2',title:'Lago + bike 90min',dur:23,distLabel:'900m + 36km',type:'swim',distKm:0.9,pace:'contínuo, sem parar (~2:15–2:30/100m)',
+        note:'Última bike longa do plano, toda em Z2. Sem corrida: amanhã é o longão de 12km, o maior do ciclo. Gel ou banana a cada 40–45min.',
+        second:{mod:'Bike',zone:'Z2',title:'Bike longa',dur:90,distLabel:'~36km',type:'bike',distKm:36}},
       {mod:'Corrida',zone:'Z2',title:'Longão — pico de 12km',dur:84,distLabel:'12km',type:'run',distKm:12,pace:'6:45–7:10/km, conversando',
         note:'Maior corrida do plano, no ritmo de conversa. Também já serve de base pro 70.3. Depois daqui o volume só cai.'}
     ],
@@ -1249,7 +1274,29 @@
     // Sábado 26/09 — simulado no Lago Paranoá (nado + corrida; bike na revisão). Dados do print enviado em 01/10.
     {id:'sim-0926-swim', date:'2026-09-26', time:'09:37', mod:'Natação', title:'Natação matinal (lago)', distKm:0.854, durMin:20.77, cal:253, hr:null, pace:'2:25/100m'},
     {id:'sim-0926-run', date:'2026-09-26', time:'', mod:'Corrida', title:'Corrida pós-nado (lago)', distKm:5.0, durMin:30.98, cal:null, hr:162, pace:'6:17/km'},
-    {id:'20085940003', date:'2026-09-08', time:'06:35', mod:'Musculação', title:'Musculação matinal', distKm:null, durMin:64.55, cal:391, hr:115, pace:null}
+    {id:'20085940003', date:'2026-09-08', time:'06:35', mod:'Musculação', title:'Musculação matinal', distKm:null, durMin:64.55, cal:391, hr:115, pace:null},
+    // 29/09 a 12/10 — importado do export do Garmin (Activities.csv) em 13/10/2026.
+    // durMin = "Tempo" do Garmin; elapsedMin = tempo transcorrido (usado pra calcular T1/T2 nos simulados).
+    {"id": "g-20260929-0656-mus", "date": "2026-09-29", "time": "06:56", "startSec": "06:56:50", "mod": "Musculação", "title": "Força", "distKm": null, "durMin": 64.68, "elapsedMin": 64.68, "cal": 365, "hr": 113, "hrMax": 146, "pace": null, "te": 1.0},
+    {"id": "g-20260930-0732-cor", "date": "2026-09-30", "time": "07:32", "startSec": "07:32:40", "mod": "Corrida", "title": "Corrida", "distKm": 3.01, "durMin": 20.62, "elapsedMin": 20.62, "cal": 245, "hr": 144, "hrMax": 164, "pace": "6:51/km", "te": 2.4, "cadence": 155},
+    {"id": "g-20261001-0714-nat", "date": "2026-10-01", "time": "07:14", "startSec": "07:14:51", "mod": "Natação", "title": "Natação em piscina", "distKm": 1.0, "durMin": 21.78, "elapsedMin": 27.9, "cal": 226, "hr": 130, "hrMax": 150, "pace": "2:11/100m", "te": 1.9, "swolf": 44},
+    {"id": "g-20261001-0814-cor", "date": "2026-10-01", "time": "08:14", "startSec": "08:14:50", "mod": "Corrida", "title": "Corrida", "distKm": 2.03, "durMin": 13.47, "elapsedMin": 13.47, "cal": 166, "hr": 146, "hrMax": 159, "pace": "6:39/km", "te": 2.2, "cadence": 155},
+    {"id": "g-20261002-0928-bik", "date": "2026-10-02", "time": "09:28", "startSec": "09:28:02", "mod": "Bike", "title": "Ciclismo", "distKm": 13.57, "durMin": 35.32, "elapsedMin": 35.32, "cal": 350, "hr": 136, "hrMax": 156, "pace": "23.1 km/h", "te": 2.4},
+    {"id": "g-20261003-0947-mus", "date": "2026-10-03", "time": "09:47", "startSec": "09:47:50", "mod": "Musculação", "title": "Força", "distKm": null, "durMin": 66.53, "elapsedMin": 66.53, "cal": 392, "hr": 114, "hrMax": 148, "pace": null, "te": 1.0},
+    {"id": "g-20261003-1900-cor", "date": "2026-10-03", "time": "19:00", "startSec": "19:00:52", "mod": "Corrida", "title": "Corrida", "distKm": 4.01, "durMin": 24.02, "elapsedMin": 24.08, "cal": 320, "hr": 147, "hrMax": 172, "pace": "6:00/km", "te": 3.0, "cadence": 160},
+    {"id": "g-20261004-0729-nat", "date": "2026-10-04", "time": "07:29", "startSec": "07:29:40", "mod": "Natação", "title": "Natação em águas abertas", "distKm": 0.622, "durMin": 15.77, "elapsedMin": 16.05, "cal": 201, "hr": 141, "hrMax": 154, "pace": "2:32/100m", "te": 2.3, "openWater": true, "swolf": 53},
+    {"id": "g-20261004-0759-bik", "date": "2026-10-04", "time": "07:59", "startSec": "07:59:54", "mod": "Bike", "title": "Ciclismo", "distKm": 12.42, "durMin": 27.55, "elapsedMin": 27.55, "cal": 331, "hr": 141, "hrMax": 164, "pace": "27.1 km/h", "te": 2.3},
+    {"id": "g-20261004-0832-cor", "date": "2026-10-04", "time": "08:32", "startSec": "08:32:50", "mod": "Corrida", "title": "Corrida", "distKm": 3.3, "durMin": 20.33, "elapsedMin": 20.33, "cal": 279, "hr": 155, "hrMax": 167, "pace": "6:09/km", "te": 2.6, "cadence": 158},
+    {"id": "g-20261006-1602-nat", "date": "2026-10-06", "time": "16:02", "startSec": "16:02:02", "mod": "Natação", "title": "Natação em piscina", "distKm": 1.825, "durMin": 38.8, "elapsedMin": 42.12, "cal": 461, "hr": 130, "hrMax": 156, "pace": "1:50/100m", "te": 2.1, "swolf": 37},
+    {"id": "g-20261007-0714-cor", "date": "2026-10-07", "time": "07:14", "startSec": "07:14:23", "mod": "Corrida", "title": "Corrida", "distKm": 5.25, "durMin": 35.03, "elapsedMin": 38.27, "cal": 420, "hr": 143, "hrMax": 174, "pace": "6:40/km", "te": 2.9, "cadence": 150},
+    {"id": "g-20261008-0720-bik", "date": "2026-10-08", "time": "07:20", "startSec": "07:20:41", "mod": "Bike", "title": "Ciclismo", "distKm": 12.51, "durMin": 31.5, "elapsedMin": 31.8, "cal": 309, "hr": 128, "hrMax": 180, "pace": "23.8 km/h", "te": 2.3},
+    {"id": "g-20261008-2015-mus", "date": "2026-10-08", "time": "20:15", "startSec": "20:15:14", "mod": "Musculação", "title": "Força", "distKm": null, "durMin": 40.47, "elapsedMin": 45.48, "cal": 239, "hr": 107, "hrMax": 144, "pace": null, "te": 0.7},
+    {"id": "g-20261009-0847-nat", "date": "2026-10-09", "time": "08:47", "startSec": "08:47:01", "mod": "Natação", "title": "Natação em piscina", "distKm": 1.225, "durMin": 42.3, "elapsedMin": 45.97, "cal": 468, "hr": 138, "hrMax": 157, "pace": "2:17/100m", "te": 2.7, "swolf": 47},
+    {"id": "g-20261010-0754-nat", "date": "2026-10-10", "time": "07:54", "startSec": "07:54:50", "mod": "Natação", "title": "Natação em águas abertas", "distKm": 0.751, "durMin": 18.27, "elapsedMin": 18.55, "cal": 243, "hr": 145, "hrMax": 156, "pace": "2:26/100m", "te": 2.6, "openWater": true, "swolf": 51},
+    {"id": "g-20261010-0823-bik", "date": "2026-10-10", "time": "08:23", "startSec": "08:23:39", "mod": "Bike", "title": "Ciclismo", "distKm": 20.61, "durMin": 46.05, "elapsedMin": 48.98, "cal": 532, "hr": 143, "hrMax": 167, "pace": "26.8 km/h", "te": 2.9},
+    {"id": "g-20261010-0914-cor", "date": "2026-10-10", "time": "09:14", "startSec": "09:14:09", "mod": "Corrida", "title": "Corrida", "distKm": 3.01, "durMin": 17.4, "elapsedMin": 17.4, "cal": 244, "hr": 163, "hrMax": 173, "pace": "5:47/km", "te": 2.7, "cadence": 158},
+    {"id": "g-20261011-1645-cor", "date": "2026-10-11", "time": "16:45", "startSec": "16:45:06", "mod": "Corrida", "title": "Corrida", "distKm": 6.04, "durMin": 38.08, "elapsedMin": 38.43, "cal": 487, "hr": 152, "hrMax": 169, "pace": "6:19/km", "te": 3.1, "cadence": 155},
+    {"id": "g-20261012-1641-mus", "date": "2026-10-12", "time": "16:41", "startSec": "16:41:57", "mod": "Musculação", "title": "Força", "distKm": null, "durMin": 55.67, "elapsedMin": 57.08, "cal": 291, "hr": 106, "hrMax": 143, "pace": null, "te": 0.6}
   ];
   let activities = [];
   function loadActivities(){
@@ -1301,6 +1348,7 @@
       if(act.pace) stats.push('<div class="as-item"><div class="as-l">Ritmo</div><div class="as-v">'+act.pace+'</div></div>');
       if(act.cal!=null) stats.push('<div class="as-item"><div class="as-l">Cal</div><div class="as-v">'+act.cal+' kcal</div></div>');
       if(act.hr!=null) stats.push('<div class="as-item"><div class="as-l">FC méd</div><div class="as-v">'+act.hr+' bpm</div></div>');
+      if(act.hrMax!=null) stats.push('<div class="as-item"><div class="as-l">FC máx</div><div class="as-v">'+act.hrMax+' bpm</div></div>');
       return '<div class="activity-card"><div class="ac-head"><span class="ac-icon">'+icon+'</span><span class="ac-title">'+act.title+'</span><span class="ac-date">'+WD_SHORT[d.getDay()]+' '+fmtDate(d)+' · '+act.time+'</span></div><div class="ac-stats">'+stats.join('')+'</div></div>';
     }).join('') || '<div style="font-size:12px;color:var(--text-faint)">Nenhuma atividade registrada ainda.</div>';
 
@@ -1315,6 +1363,7 @@
         '</div>';
     } else { noteEl.innerHTML = ''; }
     renderWeekStats(); renderCarouselIfReady();
+    if(typeof renderEvolution==='function') renderEvolution();
   }
   function renderCarouselIfReady(){ if(typeof renderCarousel === 'function' && document.getElementById('dayList').innerHTML) renderCarousel(); }
 
@@ -1399,7 +1448,7 @@
       return;
     }
     const d = days[idx];
-    const icon = d.mod==='Natação'?'🏊':d.mod==='Corrida'?'🏃':d.mod==='Bike'?'🚴':d.mod==='Prova'?'🏁':d.mod==='Simulado'?'🏊🚴🏃':'⚡';
+    const icon = d.mod==='Natação'?'🏊':d.mod==='Corrida'?'🏃':d.mod==='Bike'?'🚴':d.mod==='Prova'?'🏁':d.mod==='Simulado'?'🏊🚴🏃':d.mod==='Lago + bike'?'🏊🚴':'⚡';
     let html = '<div class="icon">'+icon+'</div><div class="info"><div class="t">'+d.title+'</div><div class="sub">'+(d.dur?d.dur+'min · ':'')+d.distLabel+(d.pace?' · '+d.pace:'')+'</div></div>';
     if(d.zone) html += '<div class="zone-badge">'+d.zone+'</div>';
     session.innerHTML = html;
@@ -1742,6 +1791,110 @@
       '<div class="lt"><div class="l">Fadiga hoje</div><div class="v">'+now.atl.toFixed(0)+'</div><div class="s">média de 7 dias</div></div>'+
       '<div class="lt"><div class="l">Forma hoje</div><div class="v">'+(now.tsb>0?'+':'')+now.tsb.toFixed(0)+'</div><div class="s">'+tsbLbl(now.tsb)+'</div></div>'+
       '<div class="lt"><div class="l">Forma no dia da prova</div><div class="v">'+(race.tsb>0?'+':'')+race.tsb.toFixed(0)+'</div><div class="s">projeção do plano</div></div>';
+  }
+
+  // ============ EVOLUTION (sims, projection, pace trends) ============
+  function paceToSec(p){ if(!p) return null; const m=String(p).match(/(\d+):(\d{2})/); return m ? (+m[1])*60+(+m[2]) : null; }
+  function secToClock(s){ if(s==null||isNaN(s)) return '--'; s=Math.round(s); const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), r=s%60;
+    return (h? h+':'+String(m).padStart(2,'0') : String(m)) + ':' + String(r).padStart(2,'0'); }
+  function startSecOf(a){ const t=a.startSec||a.time; if(!t) return null; const p=t.split(':').map(Number); return p[0]*3600+p[1]*60+(p[2]||0); }
+  function speedOf(a){ const v=parseFloat(a.pace); if(!isNaN(v) && /km\/h/.test(a.pace||'')) return v; return (a.distKm&&a.durMin)? a.distKm/(a.durMin/60) : null; }
+
+  function findSims(){
+    const byDate={};
+    activities.forEach(a=>{ (byDate[a.date]=byDate[a.date]||[]).push(a); });
+    const sims=[];
+    Object.keys(byDate).sort().forEach(k=>{
+      const acts=byDate[k].filter(a=>startSecOf(a)!=null).sort((x,y)=>startSecOf(x)-startSecOf(y));
+      const swim=acts.find(a=>a.mod==='Natação'&&a.openWater), bike=acts.find(a=>a.mod==='Bike' && swim && startSecOf(a)>startSecOf(swim));
+      if(!swim||!bike) return;
+      const run=acts.find(a=>a.mod==='Corrida' && startSecOf(a)>startSecOf(bike));
+      const end=a=>startSecOf(a)+((a.elapsedMin||a.durMin)*60);
+      const t1=startSecOf(bike)-end(swim);
+      const t2=run? startSecOf(run)-end(bike) : null;
+      const total=(swim.durMin+bike.durMin+(run?run.durMin:0))*60;
+      sims.push({date:k, swim, bike, run, t1, t2, total});
+    });
+    return sims;
+  }
+
+  function renderSimTable(){
+    const sims=findSims();
+    const el=document.getElementById('simTable');
+    if(!sims.length){ el.innerHTML='<tr><td>Nenhum simulado registrado ainda.</td></tr>'; return; }
+    const prev={};
+    el.innerHTML='<thead><tr><th>Data</th><th>🏊 Natação</th><th>T1</th><th>🚴 Bike</th><th>T2</th><th>🏃 Corrida</th><th>Em movimento</th></tr></thead><tbody>'+
+      sims.map(s=>{
+        const d=new Date(s.date+'T00:00:00');
+        const sw=s.swim, bk=s.bike, rn=s.run;
+        const swimP=paceToSec(sw.pace);
+        const cell=(main,sub)=>'<div class="ev-m">'+main+'</div><div class="ev-s">'+sub+'</div>';
+        return '<tr><td>'+WD_SHORT[d.getDay()]+' '+fmtDate(d)+'</td>'+
+          '<td>'+cell(secToClock(sw.durMin*60), Math.round(sw.distKm*1000)+'m · '+sw.pace+(sw.openWater?' · lago':''))+'</td>'+
+          '<td>'+cell(secToClock(s.t1),'')+'</td>'+
+          '<td>'+cell(secToClock(bk.durMin*60), bk.distKm+'km · '+(speedOf(bk)||0).toFixed(1)+' km/h')+'</td>'+
+          '<td>'+cell(s.t2!=null?secToClock(s.t2):'--','')+'</td>'+
+          '<td>'+(rn?cell(secToClock(rn.durMin*60), rn.distKm+'km · '+rn.pace+(rn.hr?' · '+rn.hr+'bpm':'')):cell('--','sem corrida'))+'</td>'+
+          '<td>'+cell(secToClock(s.total),'sem transições')+'</td></tr>';
+      }).join('')+'</tbody>';
+  }
+
+  function renderProjection(){
+    const swims=activities.filter(a=>a.mod==='Natação' && a.openWater && a.distKm>=0.5 && paceToSec(a.pace));
+    const sims=findSims();
+    const bikes=sims.map(s=>s.bike).filter(b=>b.distKm>=10);
+    const runs=sims.map(s=>s.run).filter(Boolean);
+    const tiles=document.getElementById('projTiles');
+    if(!swims.length||!bikes.length||!runs.length){ tiles.innerHTML=''; document.getElementById('projNote').textContent='Precisa de pelo menos um simulado completo no lago para projetar.'; return; }
+    const bestSwim=Math.min(...swims.map(a=>paceToSec(a.pace)));
+    const bestBike=Math.max(...bikes.map(speedOf));
+    const bestRun=Math.min(...runs.map(a=>paceToSec(a.pace)));
+    const swimT=bestSwim*7.5, bikeT=20/bestBike*3600, runT=bestRun*5;
+    const tile=(l,v,s)=>'<div class="lt"><div class="l">'+l+'</div><div class="v">'+v+'</div><div class="s">'+s+'</div></div>';
+    tiles.innerHTML=tile('Natação 750m',secToClock(swimT),secToClock(bestSwim)+'/100m no lago')+
+      tile('Bike 20km',secToClock(bikeT),bestBike.toFixed(1)+' km/h')+
+      tile('Corrida 5km',secToClock(runT),secToClock(bestRun)+'/km saindo da bike')+
+      tile('Total sem transições',secToClock(swimT+bikeT+runT),'+ T1 e T2 na prova');
+    const longestRun=Math.max(...runs.map(a=>a.distKm));
+    document.getElementById('projNote').innerHTML='Usa o seu melhor ritmo em cada parte dos simulados no lago. <b>A corrida está extrapolada</b>: a maior corrida depois da bike foi de '+longestRun.toFixed(1)+'km, então manter esse pace por 5km ainda não foi testado. O ensaio geral de 14/11 vai dizer se ele se sustenta.';
+  }
+
+  function renderEvoChart(elId, pts, opts){
+    const el=document.getElementById(elId);
+    if(pts.length<2){ el.innerHTML='<div style="font-size:12px;color:var(--text-faint);padding:12px 0">Poucos treinos ainda.</div>'; return; }
+    const W=340,H=170,PL=44,PR=10,PT=12,PB=24;
+    const t0=new Date(pts[0].date+'T00:00:00').getTime(), t1=new Date(pts[pts.length-1].date+'T00:00:00').getTime();
+    const xs=d=>PL+((new Date(d+'T00:00:00').getTime()-t0)/Math.max(1,t1-t0))*(W-PL-PR);
+    let lo=Math.min(...pts.map(p=>p.v)), hi=Math.max(...pts.map(p=>p.v)); const pad=(hi-lo)*0.15||1; lo-=pad; hi+=pad;
+    // invert=true → smaller is better → plot smaller at top
+    const ys=v=>opts.invert? PT+((v-lo)/(hi-lo))*(H-PT-PB) : PT+(1-(v-lo)/(hi-lo))*(H-PT-PB);
+    let g='';
+    for(let i=0;i<=3;i++){ const v=lo+(hi-lo)*i/3; g+='<line x1="'+PL+'" x2="'+(W-PR)+'" y1="'+ys(v)+'" y2="'+ys(v)+'" stroke="rgba(255,255,255,0.05)"/><text x="'+(PL-6)+'" y="'+(ys(v)+3)+'" fill="var(--text-faint)" font-size="10" font-family="monospace" text-anchor="end">'+opts.fmt(v)+'</text>'; }
+    const first=new Date(pts[0].date+'T00:00:00'), last=new Date(pts[pts.length-1].date+'T00:00:00');
+    g+='<text x="'+PL+'" y="'+(H-6)+'" fill="var(--text-faint)" font-size="10" font-family="monospace">'+fmtDate(first)+'</text>';
+    g+='<text x="'+(W-PR)+'" y="'+(H-6)+'" fill="var(--text-faint)" font-size="10" font-family="monospace" text-anchor="end">'+fmtDate(last)+'</text>';
+    g+='<path d="M'+pts.map(p=>xs(p.date).toFixed(1)+' '+ys(p.v).toFixed(1)).join(' L')+'" fill="none" stroke="'+opts.color+'" stroke-width="2" opacity=".55"/>';
+    pts.forEach((p,i)=>{ g+='<circle class="ept" data-i="'+i+'" cx="'+xs(p.date)+'" cy="'+ys(p.v)+'" r="4.5" fill="'+(p.hollow?'var(--surface)':opts.color)+'" stroke="'+opts.color+'" stroke-width="2"/>'+
+      '<circle class="ehit" data-i="'+i+'" cx="'+xs(p.date)+'" cy="'+ys(p.v)+'" r="12" fill="transparent"/>'; });
+    el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+opts.label+'">'+g+'</svg>';
+    el.querySelectorAll('.ehit').forEach(c=>{
+      c.addEventListener('mousemove',ev=>{ const p=pts[+c.dataset.i]; const d=new Date(p.date+'T00:00:00');
+        showTip('<b>'+WD_SHORT[d.getDay()]+' '+fmtDate(d)+'</b> · '+p.a.title+'<div class="tr">'+opts.name+'<b>'+opts.fmt(p.v)+'</b></div>'+
+          (p.a.distKm?'<div class="tr">Distância<b>'+(p.a.mod==='Natação'?Math.round(p.a.distKm*1000)+'m':p.a.distKm+'km')+'</b></div>':'')+
+          (p.a.hr?'<div class="tr">FC média<b>'+p.a.hr+' bpm</b></div>':''), ev); });
+      c.addEventListener('mouseleave',hideTip);
+    });
+  }
+  function renderEvolution(){
+    renderSimTable(); renderProjection();
+    const sorted=activities.slice().sort((a,b)=>(a.date+(a.startSec||a.time||''))<(b.date+(b.startSec||b.time||''))?-1:1);
+    const fmtPace=v=>secToClock(v);
+    renderEvoChart('evoRun', sorted.filter(a=>a.mod==='Corrida'&&a.distKm>=2&&paceToSec(a.pace)&&paceToSec(a.pace)<600).map(a=>({date:a.date,v:paceToSec(a.pace),a})),
+      {invert:true, fmt:fmtPace, color:'var(--phase-construcao)', name:'Pace', label:'Pace médio das corridas'});
+    renderEvoChart('evoSwim', sorted.filter(a=>a.mod==='Natação'&&paceToSec(a.pace)).map(a=>({date:a.date,v:paceToSec(a.pace),a,hollow:!!a.openWater})),
+      {invert:true, fmt:fmtPace, color:'var(--accent-2)', name:'Ritmo /100m', label:'Ritmo de natação'});
+    renderEvoChart('evoBike', sorted.filter(a=>a.mod==='Bike'&&speedOf(a)&&a.distKm>=8).map(a=>({date:a.date,v:speedOf(a),a})),
+      {invert:false, fmt:v=>v.toFixed(1), color:'var(--phase-pico)', name:'km/h', label:'Velocidade média na bike'});
   }
 
   // ============ TRAINING SUB-TABS (prova vs academia) ============
