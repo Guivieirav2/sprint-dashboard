@@ -510,6 +510,18 @@
     <div class="phase-note" id="phaseNote"></div>
   </div>
 
+
+  <!-- RETA FINAL -->
+  <div class="card" style="margin-top:20px">
+    <h2>Reta final — modelo Henrique <span class="tag">S12–S15 · atualizado 10/11</span></h2>
+    <div class="phase-note" style="line-height:1.55">
+      <p><b>Semana-tipo:</b> Seg OFF + força · Ter corrida (qualidade) + natação à tarde · Qua bike (força/ritmo, às vezes com corrida de transição) · Qui corrida leve + natação à tarde · Sex bike 30/15 · Sáb OFF · Dom simulado/brick no lago. Mobilidade 10–15min toda noite.</p>
+      <p><b>Zonas</b> (Garmin: limiar ≈177bpm): <b>L1</b> FC&lt;150, conversa (6:35–7:05/km) · <b>L2</b> 150–160 · <b>L3</b> 160–172, ritmo de prova (5k pós-bike 5:50–6:05/km; tiros de 800m 5:25–5:35) · <b>L4</b> &gt;172, tiros curtos. Bike: <b>MP</b> carga alta 60–70rpm · <b>MC</b> 85rpm · <b>ML</b> leve 100rpm · ritmo de prova FC 152–165.</p>
+      <p><b>Por que assim:</b> ~75–80% do tempo fácil e o resto forte (polarizado — Stöggl &amp; Sperlich, 2014); intervalos curtos 30/15 na bike, que acumulam mais tempo de alta intensidade que os longos com o mesmo esforço (Rønnestad et al., 2015); corridas curtas logo após a bike para treinar a transição (Walsh, 2019); taper de 2 semanas reduzindo volume 41–60% sem cortar intensidade nem frequência (Bosquet et al., 2007).</p>
+      <p style="color:var(--text-faint);font-size:12px">Bosquet L. et al. Med Sci Sports Exerc 2007;39(8):1358–65 · Stöggl T., Sperlich B. Front Physiol 2014;5:33 · Rønnestad B.R. et al. Scand J Med Sci Sports 2015;25:143–51 · Walsh J.A. Sports 2019;7(5):99</p>
+    </div>
+  </div>
+
   <!-- TRAINING PLAN -->
   <div class="section-title">Plano de Treino Sprint MSK — 15 semanas</div>
   <div class="subtabs">
@@ -837,8 +849,8 @@
     {name:'Base', weeks:[1,3], color:'var(--phase-base)', focus:'Adaptação, técnica de nado, base de corrida. Bike comprada — adaptação à estrada começa já na semana 2.'},
     {name:'Construção', weeks:[4,6], color:'var(--phase-construcao)', focus:'Volume sobe, primeiros duplos e primeiro brick leve.'},
     {name:'Intensidade', weeks:[7,10], color:'var(--phase-intensidade)', focus:'6 dias por semana. Sábado sempre no lago: semanas alternam simulado completo (nado + bike + corrida) e nado + bike longa sem corrida. Domingo é longão de corrida. Semana 10 é deload.'},
-    {name:'Pico', weeks:[11,13], color:'var(--phase-pico)', focus:'Maior carga do plano: longão até 12km, simulado com bike de até 90min e ensaio geral na distância de prova (750m + 20km + 5km) no lago em 14/11.'},
-    {name:'Polimento', weeks:[14,15], color:'var(--phase-polimento)', focus:'Taper. Volume cai, intensidade de prova se mantém. Prova no domingo 06/12.'}
+    {name:'Pico', weeks:[11,13], color:'var(--phase-pico)', focus:'Reta final no modelo do Henrique (a partir de 10/11): corrida e bike alternadas de manhã (Ter–Sex), natação 2x à tarde (Ter e Qui), sábado OFF e simulado/brick no domingo. Ensaio geral 750/20/5 em 22/11, 14 dias antes da prova.'},
+    {name:'Polimento', weeks:[14,15], color:'var(--phase-polimento)', focus:'Taper de 2 semanas: volume cai ~35% (S14) e ~55% (S15), mantendo intensidade e frequência (Bosquet et al., 2007). Prova no domingo 06/12.'}
   ];
   const DELOAD_WEEKS = [6,10];
 
@@ -1005,66 +1017,36 @@
         note:'Primeiros 10km do ciclo, no dia seguinte ao simulado. Ritmo de conversa: aqui o objetivo é volume, não velocidade.'}
     ],
     12:[
-      {mod:'Natação',zone:'Z3',title:'Ritmo de prova',dur:42,distLabel:'1200m',type:'swim',distKm:1.2,pace:'12x100m a 1:55–2:05/100m',
-        note:'200m solto + 12x100m em ritmo de prova (15s de descanso) + 100m solto.'},
-      {mod:'Corrida',zone:'Z3',title:'Tempo run',dur:45,distLabel:'7km',type:'run',distKm:7,pace:'4km contínuos a 5:55–6:10/km',
-        note:'1,5km aquecimento + 4km em ritmo de prova + 1,5km desaquecimento.'},
-      {mod:'Bike',zone:'Z2',title:'Rodagem',dur:50,distLabel:'~19km',type:'bike',distKm:19,
-        note:'Z2 constante. Dia de volume, não de intensidade — o domingo é o ensaio.'},
-      {mod:'Natação',zone:'Z1-Z2',title:'Solto (piscina)',dur:22,distLabel:'600m',type:'swim',distKm:0.6,pace:'2:10–2:25/100m',
-        note:'Curto e leve. Amanhã é o ensaio geral.'},
-      {mod:'Simulado',zone:'Z3',title:'ENSAIO GERAL — distância de prova',dur:17,distLabel:'750m + 20km + 5km',type:'swim',distKm:0.75,pace:'1:55–2:10/100m',
-        note:'Distância de prova completa no lago: 750m + 20km + 5km, no ritmo de prova. Roupa, tênis, comida, numeral e transição exatamente como no dia. Anote os tempos de cada parte e das transições.',
-        second:{mod:'Bike',zone:'Z3',title:'Bike',dur:50,distLabel:'~20km',type:'bike',distKm:20},
-        third:{mod:'Corrida',zone:'Z3',title:'Corrida',dur:30,distLabel:'5km',type:'run',distKm:5,pace:'5:55–6:10/km — ritmo real de prova'}},
-      {mod:'Corrida',zone:'Z1-Z2',title:'Rodagem regenerativa',dur:42,distLabel:'6km',type:'run',distKm:6,pace:'6:55–7:15/km',
-        note:'Dia seguinte ao ensaio: corrida bem leve só pra soltar.'}
+      {"mod": "Natação", "zone": "L1-L2", "title": "Aula de natação (feito)", "dur": 33, "distLabel": "1.600m", "type": "swim", "distKm": 1.6, "pace": "", "note": "Feito: 1.600m em 33min. A corrida da manhã ficou de fora — não compense, segue o plano."},
+      {"mod": "Corrida", "zone": "L3", "title": "4×800m L3", "dur": 45, "distLabel": "7,2km", "type": "run", "distKm": 7.2, "pace": "800m a 5:25–5:35/km", "note": "2km de trote com 2 sprints de 15\", 4×800m com 2min de trote entre, 1km de trote. Tiros no mesmo ritmo do primeiro ao último."},
+      {"mod": "Bike", "zone": "L2-L3", "title": "Marchas por terreno + natação à tarde", "dur": 61, "distLabel": "~25km", "type": "bike", "distKm": 25, "pace": "MP 60–70rpm · MC 85rpm · ML 100rpm", "note": "Rolo, bike da academia ou Parque da Cidade. Força específica: MP = carga alta/cadência baixa (simula subida), MC = médio, ML = leve e perna rápida. Troque a carga em todo passo. · Tarde: Aula da academia. Se a aula permitir escolher, priorize séries de 100m em ritmo de prova (1:55–2:10/100m) e respiração bilateral.", "second": {"mod": "Natação (tarde)", "zone": "L1-L2", "title": "Aula de natação", "dur": 35, "distLabel": "~1200m (aula)", "type": "swim", "distKm": 1.2}},
+      {"mod": "Bike", "zone": "L4", "title": "30/15 — 2 blocos", "dur": 45, "distLabel": "~19km", "type": "bike", "distKm": 19, "pace": "30\" forte (95–105rpm) / 15\" giro", "note": "Intervalos curtos 30/15 (Rønnestad 2015): mais tempo perto do VO2máx com o mesmo esforço percebido de intervalos longos. Forte, mas igual do 1º ao 10º."},
+      {"mod": "Descanso", "zone": "", "title": "Descanso (OFF)", "dur": 0, "distLabel": "", "type": null, "distKm": 0, "note": "OFF — descanso Mobilidade 10–15min à noite."},
+      {"mod": "Simulado", "zone": "L2-L3", "title": "Simulado 750 / 20 / 4", "dur": 19, "distLabel": "750m + 20km + 4km", "type": "swim", "distKm": 0.75, "pace": "nado 2:20–2:30/100m · bike L2 + 5km ritmo de prova · corrida 2km a 5:50–6:05", "note": "Lago (Concha Acústica). Antes: 10min de aquecimento de cada modalidade. Recupera o simulado que ficou de fora em 08/11. Bike 15km L2 e últimos 5km em ritmo de prova; corrida 2km em ritmo de prova + 2km L2.", "second": {"mod": "Bike", "zone": "L2-L3", "title": "Bike", "dur": 46, "distLabel": "~20km", "type": "bike", "distKm": 20}, "third": {"mod": "Corrida", "zone": "L2-L3", "title": "Corrida", "dur": 30, "distLabel": "4,8km", "type": "run", "distKm": 4.8}}
     ],
     13:[
-      {mod:'Natação',zone:'Z2-Z3',title:'Séries',dur:42,distLabel:'1200m',type:'swim',distKm:1.2,pace:'1:55–2:10/100m nas repetições',
-        note:'200m solto + 3x300m firme (30s de descanso) + 100m solto.'},
-      {mod:'Corrida',zone:'Z3',title:'Intervalado',dur:40,distLabel:'6km',type:'run',distKm:6,pace:'5x600m a 5:25–5:40/km, 2min trote',
-        note:'Último intervalado longo antes da prova.'},
-      {mod:'Bike',zone:'Z2-Z3',title:'Blocos',dur:50,distLabel:'~20km',type:'bike',distKm:20,
-        note:'10min leve + 2x12min em ritmo de prova com 5min leve entre.'},
-      {mod:'Natação',zone:'Z1-Z2',title:'Técnica (piscina)',dur:28,distLabel:'800m',type:'swim',distKm:0.8,pace:'2:10–2:25/100m',
-        note:'Nado leve de técnica: respiração bilateral, pegada longa, rolamento. Amanhã é simulado no lago — hoje é pra chegar fresco.'},
-      {mod:'Lago + bike',zone:'Z2',title:'Lago + bike 90min',dur:23,distLabel:'900m + 36km',type:'swim',distKm:0.9,pace:'contínuo, sem parar (~2:15–2:30/100m)',
-        note:'Última bike longa do plano, toda em Z2. Sem corrida: amanhã é o longão de 12km, o maior do ciclo. Gel ou banana a cada 40–45min.',
-        second:{mod:'Bike',zone:'Z2',title:'Bike longa',dur:90,distLabel:'~36km',type:'bike',distKm:36}},
-      {mod:'Corrida',zone:'Z2',title:'Longão — pico de 12km',dur:84,distLabel:'12km',type:'run',distKm:12,pace:'6:45–7:10/km, conversando',
-        note:'Maior corrida do plano, no ritmo de conversa. Também já serve de base pro 70.3. Depois daqui o volume só cai.'}
+      {"mod": "Corrida", "zone": "L3", "title": "2×2km em ritmo de prova + natação à tarde", "dur": 50, "distLabel": "8,2km", "type": "run", "distKm": 8.2, "pace": "2km a 5:50–6:05/km", "note": "2km de trote, 2×2km em ritmo de prova com 2min de trote, 4 acelerações de 100m (soltas, sem sprint), 1km de trote. · Tarde: Aula da academia. Se a aula permitir escolher, priorize séries de 100m em ritmo de prova (1:55–2:10/100m) e respiração bilateral.", "second": {"mod": "Natação (tarde)", "zone": "L1-L2", "title": "Aula de natação", "dur": 35, "distLabel": "~1200m (aula)", "type": "swim", "distKm": 1.2}},
+      {"mod": "Brick", "zone": "L3", "title": "Bike 3×8min ritmo de prova + transição", "dur": 46, "distLabel": "50min + 1,5km", "type": "bike", "distKm": 20, "pace": "bike FC 152–165 · corrida L2", "note": "Bike com 3 blocos de 8min no ritmo de prova e, logo ao descer, 1,5km de corrida. Transição curta e frequente ensina a perna a correr cansada (Walsh 2019).", "second": {"mod": "Corrida", "zone": "L3", "title": "Corrida", "dur": 9, "distLabel": "1,5km", "type": "run", "distKm": 1.5}},
+      {"mod": "Corrida", "zone": "L1", "title": "Rodagem + acelerações + natação à tarde", "dur": 40, "distLabel": "5km + 4×20\"", "type": "run", "distKm": 5.6, "pace": "FC < 150 (≈6:35–7:05/km)", "note": "Rodagem de conversa. No fim, 4 acelerações de 20\" soltas. É o dia fácil que deixa o treino forte funcionar (Stöggl & Sperlich 2014). · Tarde: Aula da academia. Foque técnica: braçada longa, rolamento, olhar à frente a cada 6–8 braçadas (navegação de lago).", "second": {"mod": "Natação (tarde)", "zone": "L1-L2", "title": "Aula de natação", "dur": 35, "distLabel": "~1200m (aula)", "type": "swim", "distKm": 1.2}},
+      {"mod": "Bike", "zone": "L4", "title": "30/15 — 3 blocos", "dur": 56, "distLabel": "~23km", "type": "bike", "distKm": 23, "pace": "30\" forte / 15\" giro", "note": "Mesma estrutura de 13/11 com um bloco a mais — a progressão da semana de pico."},
+      {"mod": "Descanso", "zone": "", "title": "Descanso (OFF)", "dur": 0, "distLabel": "", "type": null, "distKm": 0, "note": "OFF — descanso Mobilidade 10–15min à noite."},
+      {"mod": "Simulado", "zone": "L3", "title": "ENSAIO GERAL — distância de prova", "dur": 19, "distLabel": "750m + 20km + 5km", "type": "swim", "distKm": 0.75, "pace": "nado 2:20–2:30 · bike FC 152–165 · corrida 5:50–6:05/km", "note": "Exatamente duas semanas antes da prova: tudo como no dia — roupa, gel, café da manhã, montagem da transição. Anote T1 e T2. Depois daqui o volume só cai.", "second": {"mod": "Bike", "zone": "L3", "title": "Bike", "dur": 46, "distLabel": "~20km", "type": "bike", "distKm": 20}, "third": {"mod": "Corrida", "zone": "L3", "title": "Corrida", "dur": 31, "distLabel": "5km", "type": "run", "distKm": 5}}
     ],
     14:[
-      {mod:'Natação',zone:'Z2',title:'Polimento',dur:32,distLabel:'900m',type:'swim',distKm:0.9,pace:'4x100m a 1:55–2:05/100m',
-        note:'Volume menor, mas com alguns trechos em ritmo de prova pra manter a sensação.'},
-      {mod:'Corrida',zone:'Z3',title:'Ritmo de prova',dur:33,distLabel:'5km',type:'run',distKm:5,pace:'3x1km a 5:55–6:05/km, 2min trote',
-        note:'Pouco volume, ritmo de prova.'},
-      {mod:'Bike',zone:'Z2',title:'Rodagem curta',dur:35,distLabel:'~14km',type:'bike',distKm:14,
-        note:'Z2 com 3x2min em ritmo de prova.'},
-      {mod:'Natação',zone:'Z1-Z2',title:'Solto',dur:28,distLabel:'750m',type:'swim',distKm:0.75,pace:'2:10–2:25/100m',
-        note:'Nado solto, sem relógio.'},
-      {mod:'Simulado',zone:'Z2-Z3',title:'Simulado curto',dur:15,distLabel:'600m + 16km + 2,5km',type:'swim',distKm:0.6,pace:'contínuo, sem parar (~2:15–2:30/100m)',
-        note:'Simulado curto com trechos em ritmo de prova. Último treino no lago antes da prova: confira óculos, touca e o que vai usar.',
-        second:{mod:'Bike',zone:'Z2-Z3',title:'Bike',dur:40,distLabel:'~16km',type:'bike',distKm:16},
-        third:{mod:'Corrida',zone:'Z2-Z3',title:'Corrida',dur:15,distLabel:'2,5km',type:'run',distKm:2.5,pace:'6:00–6:10/km'}},
-      {mod:'Corrida',zone:'Z2',title:'Rodagem',dur:35,distLabel:'5km',type:'run',distKm:5,pace:'6:40–6:55/km',
-        note:'Último longão, agora curto. É o polimento funcionando.'}
+      {"mod": "Corrida", "zone": "L3-L4", "title": "5×400m + natação à tarde", "dur": 34, "distLabel": "5,3km", "type": "run", "distKm": 5.3, "pace": "400m a 5:15–5:25/km", "note": "Polimento: volume cai ~35%, intensidade fica (Bosquet 2007). Tiros curtos, recuperação de 1:30. · Tarde: Aula da academia. Se a aula permitir escolher, priorize séries de 100m em ritmo de prova (1:55–2:10/100m) e respiração bilateral.", "second": {"mod": "Natação (tarde)", "zone": "L1-L2", "title": "Aula de natação", "dur": 35, "distLabel": "~1200m (aula)", "type": "swim", "distKm": 1.2}},
+      {"mod": "Brick", "zone": "L3", "title": "Bike 3×5min + transição", "dur": 34, "distLabel": "39min + 1km", "type": "bike", "distKm": 15, "pace": "bike FC 152–165", "note": "Mesma lógica de 18/11, mais curto.", "second": {"mod": "Corrida", "zone": "L3", "title": "Corrida", "dur": 6, "distLabel": "1km", "type": "run", "distKm": 1}},
+      {"mod": "Corrida", "zone": "L1", "title": "Rodagem curta + acelerações + natação à tarde", "dur": 32, "distLabel": "4km + 4×20\"", "type": "run", "distKm": 4.5, "pace": "FC < 150", "note": "Leve. Se o sono estiver curto, este é o treino que pode virar descanso. · Tarde: Aula da academia. Foque técnica: braçada longa, rolamento, olhar à frente a cada 6–8 braçadas (navegação de lago).", "second": {"mod": "Natação (tarde)", "zone": "L1-L2", "title": "Aula de natação", "dur": 35, "distLabel": "~1200m (aula)", "type": "swim", "distKm": 1.2}},
+      {"mod": "Bike", "zone": "L4", "title": "30/15 — 2×8", "dur": 34, "distLabel": "~14km", "type": "bike", "distKm": 14, "pace": "30\" forte / 15\" giro", "note": "Menos repetições, mesma intensidade."},
+      {"mod": "Descanso", "zone": "", "title": "Descanso (OFF)", "dur": 0, "distLabel": "", "type": null, "distKm": 0, "note": "OFF — descanso Mobilidade 10–15min à noite."},
+      {"mod": "Simulado", "zone": "L2-L3", "title": "Simulado curto", "dur": 10, "distLabel": "400m + 12km + 2,5km", "type": "swim", "distKm": 0.4, "pace": "trechos em ritmo de prova", "note": "Último treino no lago. Teste óculos, touca e o que vai comer. Bike: últimos 4km em ritmo de prova. Corrida: 1º km em ritmo de prova.", "second": {"mod": "Bike", "zone": "L2-L3", "title": "Bike", "dur": 28, "distLabel": "~12km", "type": "bike", "distKm": 12}, "third": {"mod": "Corrida", "zone": "L2-L3", "title": "Corrida", "dur": 16, "distLabel": "2,5km", "type": "run", "distKm": 2.5}}
     ],
     15:[
-      {mod:'Natação',zone:'Z1-Z2',title:'Ativação',dur:22,distLabel:'600m',type:'swim',distKm:0.6,pace:'4x50m em ritmo de prova',
-        note:'Curto, com alguns 50m em ritmo de prova. Nada de cansar.'},
-      {mod:'Corrida',zone:'Z1-Z2',title:'Ativação',dur:26,distLabel:'4km',type:'run',distKm:4,pace:'trote 7:00/km + 2x400m a 5:55–6:05/km',
-        note:'Últimos tiros curtos só pra lembrar as pernas do ritmo.'},
-      {mod:'Bike',zone:'Z1-Z2',title:'Ativação',dur:30,distLabel:'~12km',type:'bike',distKm:12,
-        note:'Pedal tranquilo com 3 tiros de 30s. Confira pneu, freio e marchas.'},
-      {mod:'Descanso',zone:'',title:'Descanso',dur:0,distLabel:'',type:null,distKm:0,
-        note:'Descanso total. Separe o equipamento hoje, não amanhã.'},
-      {mod:'Bike',zone:'Z1',title:'Pré-prova',dur:15,distLabel:'15min + 8min',type:'bike',distKm:5,
-        note:'15min de bike solta + 8min de trote. Só pra soltar. Depois: kit, numeral, check-in da bike se houver.',
-        second:{mod:'Corrida',zone:'Z1',title:'Trote',dur:8,distLabel:'1km',type:'run',distKm:1,pace:'7:00/km, solto'}},
-      {mod:'Prova',zone:'',title:'🏁 SPRINT MSK — DIA DA PROVA',dur:0,distLabel:'750m · 20km · 5km',type:null,distKm:0,
-        note:'É hoje. Siga o plano da seção "Dia da prova" e não teste nada novo.'}
+      {"mod": "Corrida", "zone": "L1/L3", "title": "Ativação 3×200m + natação à tarde", "dur": 27, "distLabel": "4km", "type": "run", "distKm": 4, "pace": "200m a 5:00–5:15/km", "note": "Semana da prova: volume ~50% menor, frequência e intensidade mantidas (Bosquet 2007). Os tiros só lembram as pernas do ritmo. · Tarde: Aula leve. Nada de forçar — o objetivo é manter a sensação da água, não gerar cansaço.", "second": {"mod": "Natação (tarde)", "zone": "L1-L2", "title": "Aula de natação — ativação", "dur": 30, "distLabel": "~1000m (aula)", "type": "swim", "distKm": 1.0}},
+      {"mod": "Bike", "zone": "L1/L3", "title": "Ativação 3×2min", "dur": 35, "distLabel": "~14km", "type": "bike", "distKm": 14, "pace": "3×2min em ritmo de prova", "note": "Confira pneu, freio e câmbio depois do treino."},
+      {"mod": "Corrida", "zone": "L1", "title": "Trote + acelerações + natação à tarde", "dur": 24, "distLabel": "3km + 4×20\"", "type": "run", "distKm": 3.3, "pace": "FC < 150", "note": "Curto e solto. · Tarde: Aula leve. Nada de forçar — o objetivo é manter a sensação da água, não gerar cansaço.", "second": {"mod": "Natação (tarde)", "zone": "L1-L2", "title": "Aula de natação — leve", "dur": 25, "distLabel": "~800m (aula)", "type": "swim", "distKm": 0.8}},
+      {"mod": "Descanso", "zone": "", "title": "Descanso (OFF)", "dur": 0, "distLabel": "", "type": null, "distKm": 0, "note": "OFF — descanso total. Separe todo o equipamento hoje. Mobilidade 10–15min à noite."},
+      {"mod": "Brick", "zone": "L1", "title": "Pré-prova", "dur": 14, "distLabel": "15min + 8min", "type": "bike", "distKm": 6, "pace": "3×30\" em ritmo de prova na bike", "note": "Só pra soltar. Depois: kit, numeral, check-in. Durma cedo.", "second": {"mod": "Corrida", "zone": "L1", "title": "Corrida", "dur": 6, "distLabel": "1km", "type": "run", "distKm": 1}},
+      {"mod": "Prova", "zone": "", "title": "🏁 SPRINT MSK — DIA DA PROVA", "dur": 0, "distLabel": "750m · 20km · 5km", "type": null, "distKm": 0, "note": "Nada novo hoje. Nado controlado, bike em ritmo de prova, corrida começando em 6:00 e fechando forte."}
     ]
   };
 
@@ -1296,7 +1278,43 @@
     {"id": "g-20261010-0823-bik", "date": "2026-10-10", "time": "08:23", "startSec": "08:23:39", "mod": "Bike", "title": "Ciclismo", "distKm": 20.61, "durMin": 46.05, "elapsedMin": 48.98, "cal": 532, "hr": 143, "hrMax": 167, "pace": "26.8 km/h", "te": 2.9},
     {"id": "g-20261010-0914-cor", "date": "2026-10-10", "time": "09:14", "startSec": "09:14:09", "mod": "Corrida", "title": "Corrida", "distKm": 3.01, "durMin": 17.4, "elapsedMin": 17.4, "cal": 244, "hr": 163, "hrMax": 173, "pace": "5:47/km", "te": 2.7, "cadence": 158},
     {"id": "g-20261011-1645-cor", "date": "2026-10-11", "time": "16:45", "startSec": "16:45:06", "mod": "Corrida", "title": "Corrida", "distKm": 6.04, "durMin": 38.08, "elapsedMin": 38.43, "cal": 487, "hr": 152, "hrMax": 169, "pace": "6:19/km", "te": 3.1, "cadence": 155},
-    {"id": "g-20261012-1641-mus", "date": "2026-10-12", "time": "16:41", "startSec": "16:41:57", "mod": "Musculação", "title": "Força", "distKm": null, "durMin": 55.67, "elapsedMin": 57.08, "cal": 291, "hr": 106, "hrMax": 143, "pace": null, "te": 0.6}
+    {"id": "g-20261012-1641-mus", "date": "2026-10-12", "time": "16:41", "startSec": "16:41:57", "mod": "Musculação", "title": "Força", "distKm": null, "durMin": 55.67, "elapsedMin": 57.08, "cal": 291, "hr": 106, "hrMax": 143, "pace": null, "te": 0.6},
+    // 13/10–10/11 — importado do Garmin Connect em 10/11/2026 (tempo em movimento).
+    {"id": "g-20261013-1817-nat", "date": "2026-10-13", "time": "18:17", "mod": "Natação", "title": "Natação em piscina", "distKm": 1.375, "durMin": 32.82, "elapsedMin": 50.65, "cal": 394, "hr": 133, "hrMax": 153, "pace": "2:23/100m", "te": 2.3, "swolf": 50},
+    {"id": "g-20261014-0732-cor", "date": "2026-10-14", "time": "07:32", "mod": "Corrida", "title": "Corrida", "distKm": 6.012, "durMin": 39.03, "elapsedMin": 39.7, "cal": 481, "hr": 151, "hrMax": 165, "pace": "6:30/km", "te": 3.1, "cadence": 156},
+    {"id": "g-20261014-2009-mus", "date": "2026-10-14", "time": "20:09", "mod": "Musculação", "title": "Força", "distKm": null, "durMin": 23.03, "elapsedMin": 44.55, "cal": 278, "hr": 112, "hrMax": 158, "pace": null, "te": 1.0},
+    {"id": "g-20261015-0721-bik", "date": "2026-10-15", "time": "07:21", "mod": "Bike", "title": "Bike indoor", "distKm": null, "durMin": 40.03, "elapsedMin": 40.03, "cal": 288, "hr": 116, "hrMax": 135, "pace": null, "te": 1.3, "indoor": true},
+    {"id": "g-20261017-0815-nat", "date": "2026-10-17", "time": "08:15", "mod": "Natação", "title": "Natação em águas abertas", "distKm": 0.809, "durMin": 20.42, "elapsedMin": 20.78, "cal": 200, "hr": 128, "hrMax": 149, "pace": "2:31/100m", "te": 1.9, "openWater": true},
+    {"id": "g-20261017-0853-bik", "date": "2026-10-17", "time": "08:53", "mod": "Bike", "title": "Ciclismo", "distKm": 29.481, "durMin": 66.02, "elapsedMin": 66.35, "cal": 644, "hr": 137, "hrMax": 190, "pace": "26.8 km/h", "te": 2.8},
+    {"id": "g-20261018-0715-nat", "date": "2026-10-18", "time": "07:15", "mod": "Natação", "title": "Natação em águas abertas", "distKm": 0.77, "durMin": 19.27, "elapsedMin": 20.53, "cal": 210, "hr": 135, "hrMax": 164, "pace": "2:30/100m", "te": 2.1, "openWater": true},
+    {"id": "g-20261018-0741-bik", "date": "2026-10-18", "time": "07:41", "mod": "Bike", "title": "Ciclismo", "distKm": 20.384, "durMin": 42.77, "elapsedMin": 42.78, "cal": 457, "hr": 147, "hrMax": 175, "pace": "28.6 km/h", "te": 3.0},
+    {"id": "g-20261018-0826-cor", "date": "2026-10-18", "time": "08:26", "mod": "Corrida", "title": "Corrida", "distKm": 1.974, "durMin": 11.38, "elapsedMin": 11.47, "cal": 150, "hr": 154, "hrMax": 165, "pace": "5:46/km", "te": 3.2, "cadence": 159},
+    {"id": "g-20261018-0856-cor", "date": "2026-10-18", "time": "08:56", "mod": "Corrida", "title": "Corrida", "distKm": 1.7, "durMin": 12.47, "elapsedMin": 12.6, "cal": 138, "hr": 143, "hrMax": 153, "pace": "7:20/km", "te": 1.7, "cadence": 155},
+    {"id": "g-20261019-1834-mus", "date": "2026-10-19", "time": "18:34", "mod": "Musculação", "title": "Força", "distKm": null, "durMin": 30.93, "elapsedMin": 57.8, "cal": 338, "hr": 110, "hrMax": 170, "pace": null, "te": 1.1},
+    {"id": "g-20261020-1733-nat", "date": "2026-10-20", "time": "17:33", "mod": "Natação", "title": "Natação em piscina", "distKm": 0.9, "durMin": 17.83, "elapsedMin": 43.05, "cal": 334, "hr": 122, "hrMax": 156, "pace": "1:59/100m", "te": 1.8, "swolf": 40},
+    {"id": "g-20261021-0659-cor", "date": "2026-10-21", "time": "06:59", "mod": "Corrida", "title": "Corrida", "distKm": 6.373, "durMin": 41.07, "elapsedMin": 46.93, "cal": 533, "hr": 148, "hrMax": 169, "pace": "6:27/km", "te": 3.0, "cadence": 135},
+    {"id": "g-20261021-1922-mus", "date": "2026-10-21", "time": "19:22", "mod": "Musculação", "title": "Força", "distKm": null, "durMin": 29.82, "elapsedMin": 57.45, "cal": 381, "hr": 113, "hrMax": 172, "pace": null, "te": 1.3},
+    {"id": "g-20261021-2020-cor", "date": "2026-10-21", "time": "20:20", "mod": "Corrida", "title": "Corrida", "distKm": 2.013, "durMin": 16.1, "elapsedMin": 20.12, "cal": 188, "hr": 136, "hrMax": 166, "pace": "7:60/km", "te": 2.1, "cadence": 112},
+    {"id": "g-20261022-1752-bik", "date": "2026-10-22", "time": "17:52", "mod": "Bike", "title": "Ciclismo", "distKm": 18.224, "durMin": 49.92, "elapsedMin": 51.87, "cal": 485, "hr": 128, "hrMax": 180, "pace": "21.9 km/h", "te": 2.6},
+    {"id": "g-20261023-1601-nat", "date": "2026-10-23", "time": "16:01", "mod": "Natação", "title": "Natação em piscina", "distKm": 1.1, "durMin": 26.6, "elapsedMin": 43.13, "cal": 400, "hr": 128, "hrMax": 159, "pace": "2:25/100m", "te": 2.1, "swolf": 49},
+    {"id": "g-20261024-0948-bik", "date": "2026-10-24", "time": "09:48", "mod": "Bike", "title": "Ciclismo", "distKm": 20.226, "durMin": 45.12, "elapsedMin": 46.97, "cal": 565, "hr": 148, "hrMax": 187, "pace": "26.9 km/h", "te": 3.1},
+    {"id": "g-20261024-1049-cor", "date": "2026-10-24", "time": "10:49", "mod": "Corrida", "title": "Corrida", "distKm": 3.68, "durMin": 21.43, "elapsedMin": 23.58, "cal": 308, "hr": 166, "hrMax": 185, "pace": "5:49/km", "te": 3.0, "cadence": 157},
+    {"id": "g-20261025-1842-nat", "date": "2026-10-25", "time": "18:42", "mod": "Natação", "title": "Natação em piscina", "distKm": 1.023, "durMin": 19.37, "elapsedMin": 31.97, "cal": 240, "hr": 134, "hrMax": 153, "pace": "1:54/100m", "te": 2.1, "swolf": 52},
+    {"id": "g-20261026-1958-mus", "date": "2026-10-26", "time": "19:58", "mod": "Musculação", "title": "Força", "distKm": null, "durMin": 27.23, "elapsedMin": 60.15, "cal": 390, "hr": 113, "hrMax": 153, "pace": null, "te": 1.4},
+    {"id": "g-20261027-0738-cor", "date": "2026-10-27", "time": "07:38", "mod": "Corrida", "title": "Corrida na esteira", "distKm": 5.13, "durMin": 28.7, "elapsedMin": 35.73, "cal": 329, "hr": 130, "hrMax": 162, "pace": "5:36/km", "te": 2.3, "cadence": 150},
+    {"id": "g-20261028-1816-nat", "date": "2026-10-28", "time": "18:16", "mod": "Natação", "title": "Natação em piscina", "distKm": 0.9, "durMin": 18.8, "elapsedMin": 44.7, "cal": 373, "hr": 124, "hrMax": 150, "pace": "2:05/100m", "te": 2.0, "swolf": 43},
+    {"id": "g-20261030-0757-mus", "date": "2026-10-30", "time": "07:57", "mod": "Musculação", "title": "Força", "distKm": null, "durMin": 12.27, "elapsedMin": 38.63, "cal": 271, "hr": 115, "hrMax": 160, "pace": null, "te": 1.1},
+    {"id": "g-20261031-0721-cor", "date": "2026-10-31", "time": "07:21", "mod": "Corrida", "title": "Corrida", "distKm": 5.792, "durMin": 32.82, "elapsedMin": 32.88, "cal": 463, "hr": 158, "hrMax": 178, "pace": "5:40/km", "te": 3.2, "cadence": 159},
+    {"id": "g-20261102-0847-cor", "date": "2026-11-02", "time": "08:47", "mod": "Corrida", "title": "Corrida na esteira", "distKm": 3.6, "durMin": 23.4, "elapsedMin": 26.17, "cal": 284, "hr": 141, "hrMax": 158, "pace": "6:30/km", "te": 2.4, "cadence": 147},
+    {"id": "g-20261102-0919-mus", "date": "2026-11-02", "time": "09:19", "mod": "Musculação", "title": "Força", "distKm": null, "durMin": 19.63, "elapsedMin": 41.62, "cal": 264, "hr": 109, "hrMax": 165, "pace": null, "te": 1.3},
+    {"id": "g-20261103-1012-cor", "date": "2026-11-03", "time": "10:12", "mod": "Corrida", "title": "Corrida na esteira", "distKm": 4.579, "durMin": 30.63, "elapsedMin": 31.43, "cal": 379, "hr": 145, "hrMax": 162, "pace": "6:41/km", "te": 2.7, "cadence": 149},
+    {"id": "g-20261103-1600-nat", "date": "2026-11-03", "time": "16:00", "mod": "Natação", "title": "Natação em piscina", "distKm": 1.225, "durMin": 25.88, "elapsedMin": 33.97, "cal": 313, "hr": 132, "hrMax": 160, "pace": "2:07/100m", "te": 2.4, "swolf": 44},
+    {"id": "g-20261104-1531-bik", "date": "2026-11-04", "time": "15:31", "mod": "Bike", "title": "Bike indoor", "distKm": null, "durMin": 61.82, "elapsedMin": 61.82, "cal": 471, "hr": 119, "hrMax": 155, "pace": null, "te": 2.1, "indoor": true},
+    {"id": "g-20261105-1133-nat", "date": "2026-11-05", "time": "11:33", "mod": "Natação", "title": "Natação em piscina", "distKm": 1.175, "durMin": 27.92, "elapsedMin": 34.82, "cal": 305, "hr": 124, "hrMax": 159, "pace": "2:23/100m", "te": 2.0, "swolf": 50},
+    {"id": "g-20261106-0642-cor", "date": "2026-11-06", "time": "06:42", "mod": "Corrida", "title": "Corrida", "distKm": 5.278, "durMin": 32.38, "elapsedMin": 36.88, "cal": 445, "hr": 146, "hrMax": 170, "pace": "6:08/km", "te": 2.9, "cadence": 137},
+    {"id": "g-20261107-0720-cor", "date": "2026-11-07", "time": "07:20", "mod": "Corrida", "title": "Corrida", "distKm": 5.01, "durMin": 33.22, "elapsedMin": 34.78, "cal": 401, "hr": 141, "hrMax": 163, "pace": "6:38/km", "te": 2.6, "cadence": 154},
+    {"id": "g-20261109-0956-mus", "date": "2026-11-09", "time": "09:56", "mod": "Musculação", "title": "Força", "distKm": null, "durMin": 11.82, "elapsedMin": 39.9, "cal": 228, "hr": 105, "hrMax": 145, "pace": null, "te": 0.6},
+    {"id": "g-20261110-1651-nat", "date": "2026-11-10", "time": "16:51", "mod": "Natação", "title": "Natação em piscina", "distKm": 1.6, "durMin": 33.27, "elapsedMin": 42.68, "cal": 346, "hr": 125, "hrMax": 151, "pace": "2:05/100m", "te": 2.1, "swolf": 42}
   ];
   let activities = [];
   function loadActivities(){
@@ -1641,7 +1659,7 @@
   document.getElementById('cnNext').addEventListener('click', ()=>{ if(currentWeek<TOTAL_WEEKS){ currentWeek++; renderCarousel(); } });
 
   // ============ VOLUME + LOAD CHARTS ============
-  const ZONE_IF = {'Z1':0.6,'Z1-Z2':0.65,'Z2':0.72,'Z2-Z3':0.8,'Z3':0.85};
+  const ZONE_IF = {'Z1':0.6,'Z1-Z2':0.65,'Z2':0.72,'Z2-Z3':0.8,'Z3':0.85,'L1':0.65,'L1-L2':0.7,'L2':0.75,'L2-L3':0.8,'L3':0.85,'L3-L4':0.9,'L4':0.92,'L1/L3':0.7};
   function sessionParts(d){
     const parts = [];
     if(!d || d.mod==='Descanso') return parts;
